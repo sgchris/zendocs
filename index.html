@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="zendocs">
 
 	<head>
 
@@ -28,36 +28,42 @@
 		<!-- Custom scripts for this template -->
 		<script src="js/clean-blog.min.js"></script>
 
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+		<script src="/angular/vendor/angular-ui-router.min.js"></script>
+
+		<script src="/angular/app.js"></script>
+		<script src="/angular/controllers/HomeController.js"></script>
+		<script src="/angular/controllers/PostController.js"></script>
+
 	</head>
 
-	<body>
+	<body ng-controller="HomeController">
 
 		<!-- Navigation -->
 		<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
 			<div class="container">
-				<a class="navbar-brand" href="index.html">Start Bootstrap</a>
+				<a class="navbar-brand" href="index.html">Zend Docs</a>
 				<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
 					Menu
 					<i class="fas fa-bars"></i>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarResponsive">
 					<ul class="navbar-nav ml-auto">
-						<li class="nav-item">
-							<a class="nav-link" href="index.html">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="about.html">About</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="post.html">Sample Post</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="contact.html">Contact</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="http://www.zend.com/" target="_blank">zend.com</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="https://www.roguewave.com/" target="_blank">roguewave.com</a>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
+		<div ui-view></div>
 
 		<!-- Page Header -->
 		<header class="masthead" style="background-image: url('img/home-bg.jpg')">
@@ -66,8 +72,8 @@
 				<div class="row">
 					<div class="col-lg-8 col-md-10 mx-auto">
 						<div class="site-heading">
-							<h1>Clean Blog</h1>
-							<span class="subheading">A Blog Theme by Start Bootstrap</span>
+							<h1 style="white-space: nowrap;">Docs / Instructions / Notes</h1>
+							<span class="subheading">A bunch of helpful snippets for the devs</span>
 						</div>
 					</div>
 				</div>
@@ -78,6 +84,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-md-10 mx-auto">
+
+					<!-- Repeat the next segment -->
 					<div class="post-preview">
 						<a href="post.html">
 							<h2 class="post-title">
@@ -92,48 +100,11 @@
 							on September 24, 2018</p>
 					</div>
 					<hr>
-					<div class="post-preview">
-						<a href="post.html">
-							<h2 class="post-title">
-								I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
-							</h2>
-						</a>
-						<p class="post-meta">Posted by
-							<a href="#">Start Bootstrap</a>
-							on September 18, 2018</p>
-					</div>
-					<hr>
-					<div class="post-preview">
-						<a href="post.html">
-							<h2 class="post-title">
-								Science has not yet mastered prophecy
-							</h2>
-							<h3 class="post-subtitle">
-								We predict too much for the next year and yet far too little for the next ten.
-							</h3>
-						</a>
-						<p class="post-meta">Posted by
-							<a href="#">Start Bootstrap</a>
-							on August 24, 2018</p>
-					</div>
-					<hr>
-					<div class="post-preview">
-						<a href="post.html">
-							<h2 class="post-title">
-								Failure is not an option
-							</h2>
-							<h3 class="post-subtitle">
-								Many say exploration is part of our destiny, but it’s actually our duty to future generations.
-							</h3>
-						</a>
-						<p class="post-meta">Posted by
-							<a href="#">Start Bootstrap</a>
-							on July 8, 2018</p>
-					</div>
-					<hr>
+					<!-- /repeat -->
+					
 					<!-- Pager -->
 					<div class="clearfix">
-						<a class="btn btn-primary float-right" href="#">Older Posts &rarr;</a>
+						<a class="btn btn-primary float-right" href="#">More &rarr;</a>
 					</div>
 				</div>
 			</div>
@@ -147,6 +118,7 @@
 				<div class="row">
 					<div class="col-lg-8 col-md-10 mx-auto">
 						<ul class="list-inline text-center">
+							<!-- Twitter -->
 							<li class="list-inline-item">
 								<a href="#">
 									<span class="fa-stack fa-lg">
@@ -155,6 +127,8 @@
 									</span>
 								</a>
 							</li>
+
+							<!-- facebook 
 							<li class="list-inline-item">
 								<a href="#">
 									<span class="fa-stack fa-lg">
@@ -163,6 +137,9 @@
 									</span>
 								</a>
 							</li>
+							-->
+
+							<!-- GitHub -->
 							<li class="list-inline-item">
 								<a href="#">
 									<span class="fa-stack fa-lg">
@@ -172,7 +149,7 @@
 								</a>
 							</li>
 						</ul>
-						<p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+						<p class="copyright text-muted">Copyright &copy; Zend Technologies - the RogueWave company</p>
 					</div>
 				</div>
 			</div>
