@@ -17,6 +17,12 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         templateUrl: '/angular/templates/post.html'
     });
 
+    $stateProvider.state('login', {
+        url: '/login',
+        controller: 'AuthController',
+        templateUrl: '/angular/templates/login.html'
+    });
+
     $locationProvider.hashPrefix('!');
 }]);
 

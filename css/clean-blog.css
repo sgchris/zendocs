@@ -212,6 +212,7 @@ header.masthead .site-heading {
 header.masthead .page-heading,
 header.masthead .site-heading {
   text-align: center;
+  min-height: 70px;
 }
 
 header.masthead .page-heading h1,

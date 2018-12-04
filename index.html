@@ -31,7 +31,22 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
 		<script src="/angular/vendor/angular-ui-router.min.js"></script>
 
+		<script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+		<script>
+			// Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyB07EkhVfJ6vkPCjg-8sTqsSFrcCxRFjq4",
+				authDomain: "zendocs-43700.firebaseapp.com",
+				databaseURL: "https://zendocs-43700.firebaseio.com",
+				projectId: "zendocs-43700",
+				storageBucket: "",
+				messagingSenderId: "570118287413"
+			};
+			firebase.initializeApp(config);
+		</script>
+
 		<script src="/angular/app.js"></script>
+		<script src="/angular/controllers/AuthController.js"></script>
 		<script src="/angular/controllers/HomeController.js"></script>
 		<script src="/angular/controllers/PostController.js"></script>
 
@@ -42,7 +57,7 @@
 		<!-- Navigation -->
 		<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
 			<div class="container">
-				<a class="navbar-brand" href="index.html">Zend Docs</a>
+				<a class="navbar-brand" href="/#!/home">Zend Docs</a>
 				<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
 					Menu
 					<i class="fas fa-bars"></i>
@@ -54,16 +69,12 @@
 							<a class="nav-link" href="contact.html">Contact</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="http://www.zend.com/" target="_blank">zend.com</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="https://www.roguewave.com/" target="_blank">roguewave.com</a>
+							<a class="nav-link" href="#!/login">Login</a>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-		<div ui-view></div>
 
 		<!-- Page Header -->
 		<header class="masthead" style="background-image: url('img/home-bg.jpg')">
@@ -84,28 +95,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-md-10 mx-auto">
-
-					<!-- Repeat the next segment -->
-					<div class="post-preview">
-						<a href="post.html">
-							<h2 class="post-title">
-								Man must explore, and this is exploration at its greatest
-							</h2>
-							<h3 class="post-subtitle">
-								Problems look mighty small from 150 miles up
-							</h3>
-						</a>
-						<p class="post-meta">Posted by
-							<a href="#">Start Bootstrap</a>
-							on September 24, 2018</p>
-					</div>
-					<hr>
-					<!-- /repeat -->
-					
-					<!-- Pager -->
-					<div class="clearfix">
-						<a class="btn btn-primary float-right" href="#">More &rarr;</a>
-					</div>
+					<div ui-view></div>
 				</div>
 			</div>
 		</div>
@@ -120,7 +110,7 @@
 						<ul class="list-inline text-center">
 							<!-- Twitter -->
 							<li class="list-inline-item">
-								<a href="#">
+								<a href="https://twitter.com/zend" target="_blank">
 									<span class="fa-stack fa-lg">
 										<i class="fas fa-circle fa-stack-2x"></i>
 										<i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
@@ -128,23 +118,28 @@
 								</a>
 							</li>
 
-							<!-- facebook 
-							<li class="list-inline-item">
-								<a href="#">
-									<span class="fa-stack fa-lg">
-										<i class="fas fa-circle fa-stack-2x"></i>
-										<i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
-									</span>
-								</a>
-							</li>
-							-->
-
 							<!-- GitHub -->
 							<li class="list-inline-item">
-								<a href="#">
+								<a href="https://github.com/sgchris/zendocs" target="_blank">
 									<span class="fa-stack fa-lg">
 										<i class="fas fa-circle fa-stack-2x"></i>
 										<i class="fab fa-github fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+							<li class="list-inline-item" title="Zend Technologies">
+								<a href="http://www.zend.com/" target="_blank">
+									<span class="fa-stack fa-lg">
+										<i class="fas fa-circle fa-stack-2x"></i>
+										<i class="fas fa-link fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+							<li class="list-inline-item" title="RogueWave">
+								<a href="https://www.roguewave.com/" target="_blank">
+									<span class="fa-stack fa-lg">
+										<i class="fas fa-circle fa-stack-2x"></i>
+										<i class="fas fa-link fa-stack-1x fa-inverse"></i>
 									</span>
 								</a>
 							</li>
