@@ -69,7 +69,8 @@
 							<a class="nav-link" href="contact.html">Contact</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#!/login">Login</a>
+							<a class="nav-link" href="#!/login" ng-if="!user">Login</a>
+							<a class="nav-link" href="#!/logout" ng-if=" user">Logout</a>
 						</li>
 					</ul>
 				</div>

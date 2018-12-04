@@ -1,4 +1,5 @@
 app.controller('AuthController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+
     $scope.formData = {
         email: '',
         password: '',
@@ -27,11 +28,25 @@ app.controller('AuthController', ['$scope', '$http', '$state', function($scope, 
         },
 
         logout: function() {
-            firebase.auth().signOut().then(function() {
+            var promise = firebase.auth().signOut();
+            
+            promise.then(function() {
                 // Sign-out successful.
             }).catch(function(error) {
                 // An error happened.
             });
+
+            return promise;
         }
+    };
+
+    // check current state
+    if ($state.current.name == 'logout') {
+        $scope.methods.logout().then(function() {
+            $scope.$apply(function() {
+                $state.go('home');
+            });
+        });
     }
+
 }]);
