@@ -1,4 +1,5 @@
-app.controller('AuthController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('AuthController', ['$scope', '$http', '$state', 'ZNotif', 
+function($scope, $http, $state, ZNotif) {
 
     $scope.formData = {
         email: '',
@@ -23,11 +24,21 @@ app.controller('AuthController', ['$scope', '$http', '$state', function($scope, 
 
     $scope.methods = {
         signup: function() {
-            firebase.auth().createUserWithEmailAndPassword($scope.formData.email, $scope.formData.password).catch(function(error) {
+            var fullname = $scope.formData.fullname;
+            var email = $scope.formData.email;
+            var password = $scope.formData.password;
+
+            firebase.auth().createUserWithEmailAndPassword(email, password).then(function() {
+                firebase.auth().signInWithEmailAndPassword(email, password).then(function() {
+                    firebase.auth().user.updateProfile({
+                        displayName: fullname
+                    });
+                });
+            })
+            .catch(function(error) {
                 // Handle Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
-                // ...
             });
         },
         updateProfile: function() {
@@ -53,10 +64,12 @@ app.controller('AuthController', ['$scope', '$http', '$state', function($scope, 
             }
         },
         login: function() {
-            firebase.auth().signInWithEmailAndPassword($scope.formData.email, $scope.formData.password).catch(function(error) {
-                console.log('error occured', error);
-                // Handle Errors here.
-                var errorCode = error.code;
+            firebase.auth().signInWithEmailAndPassword($scope.formData.email, $scope.formData.password)
+            .then(function() {
+                $state.go('home');
+            })
+            .catch(function(error) {
+                ZNotif('Authentication error', error.message, 'error');
                 $scope.$apply(function() {
                     $scope.formData.errorMessage = error.message;
                 })
@@ -91,7 +104,7 @@ app.controller('AuthController', ['$scope', '$http', '$state', function($scope, 
     };
 
     // check current state
-    if ($state.current.name == 'logout') {
+    if ($state.current.name == 'user.logout') {
         $scope.methods.logout().then(function() {
             $scope.$apply(function() {
                 $state.go('home');
