@@ -43,24 +43,22 @@ function($scope, $http, $state, ZNotif) {
         },
         updateProfile: function() {
             var user = firebase.auth().user;
+
             if (user) {
+                var fullname = $scope.formData.fullname;
+                var email = $scope.formData.email;
+                var password = $scope.formData.password;
+                
                 user.updateProfile({
                     displayName: $scope.formData.fullname,
                     //photoURL: "https://example.com/jane-q-user/profile.jpg"
                 }).then(function() {
+                    ZNotif('Profile', 'Your profile updated successfully');
                     // Update successful.
                 }).catch(function(error) {
-                    // An error happened.
+                    ZNotif('Profile', error.message, 'error');
                 });
 
-                /*
-                firebase.auth().createUserWithEmailAndPassword($scope.formData.email, $scope.formData.password).catch(function(error) {
-                    // Handle Errors here.
-                    var errorCode = error.code;
-                    var errorMessage = error.message;
-                    // ...
-                });
-                */
             }
         },
         login: function() {

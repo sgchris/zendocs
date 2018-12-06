@@ -53,7 +53,6 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
     // watch the "auth" status
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-            console.log('authenticated', user);
             $rootScope.$apply(function() {
                 $rootScope.user = {
                     uid: user.uid,
