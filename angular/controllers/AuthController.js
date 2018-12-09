@@ -20,11 +20,11 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         getPageName: function() {
             switch($scope.currentState) {
                 case 'user.login': 
-                    return 'Login';
+                    return {pageName: 'Login', buttonCaption: 'Login'};
                 case 'user.signup': 
-                    return 'Sign up';                    
+                    return {pageName: 'Sign up', buttonCaption: 'Sign up'};
                 default: 
-                    return 'Profile';
+                    return {pageName: 'Profile', buttonCaption: 'Update profile'};
             }
         }
     }
@@ -70,23 +70,27 @@ function($scope, $rootScope, $http, $state, ZNotif) {
             });
         },
         updateProfile: function() {
-            var user = firebase.auth().user;
-
-            if (user) {
+            if ($scope.user) {
+                var user = firebase.auth().currentUser;
+                console.log('user', user);
                 var fullname = $scope.formData.fullname;
                 var email = $scope.formData.email;
                 var password = $scope.formData.password;
                 
                 user.updateProfile({
-                    displayName: $scope.formData.fullname,
+                    displayName: fullname,
+                    email: email,
+                    password: password,
                     //photoURL: "https://example.com/jane-q-user/profile.jpg"
                 }).then(function() {
                     ZNotif('Profile', 'Your profile updated successfully');
                     // Update successful.
                 }).catch(function(error) {
+                    console.error('Profile update error', error)
                     ZNotif('Profile', error.message, 'error');
                 });
-
+            } else {
+                ZNotif('Profile update', 'Please re-login to update the profile', 'error');
             }
         },
         login: function() {
@@ -114,7 +118,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
             return promise;
         },
 
-        // general submit buton
+        // general submit button
         submit: function() {
             switch($scope.currentState) {
                 case 'user.login': 

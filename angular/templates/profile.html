@@ -4,10 +4,10 @@
 
 
 <div ng-if="!user || currentState == 'user.profile'">
-    <h1>{{ ui.getPageName() }}</h1>
+    <h1>{{ ui.getPageName().pageName }}</h1>
 
     <form name="sentMessage" id="contactForm" novalidate ng-submit="methods.submit();">
-        <div class="control-group" ng-if="ui.getPageName() == 'Sign up' || ui.getPageName() == 'Profile'">
+        <div class="control-group" ng-if="ui.getPageName().pageName == 'Sign up' || ui.getPageName().pageName == 'Profile'">
             <div class="form-group floating-label-form-group controls">
                 <label>Full name</label>
                 <input type="text" class="form-control" placeholder="Full name"
@@ -42,7 +42,7 @@
         <div class="alert-danger mb-3" ng-show="formData.errorMessage">{{ formData.errorMessage }}</div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary" id="loginButton" ng-attr-title="{{ ui.getPageName() }}">{{ ui.getPageName() }}</button>
+            <button type="submit" class="btn btn-primary" id="loginButton" ng-attr-title="{{ ui.getPageName().buttonCaption }}">{{ ui.getPageName().buttonCaption }}</button>
         </div>
     </form>
 </div>
