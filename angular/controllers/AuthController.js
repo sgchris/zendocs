@@ -1,64 +1,105 @@
-app.controller('AuthController', ['$scope', '$http', '$state', 'ZNotif', 
-function($scope, $http, $state, ZNotif) {
+app.controller('AuthController', ['$scope', '$rootScope', '$http', '$state', 'ZNotif', 
+function($scope, $rootScope, $http, $state, ZNotif) {
 
     $scope.formData = {
         email: '',
         password: '',
         fullname: '',
 
-        errorMessage: ''
+        errorMessage: '',
+
+        init: function() {
+            if ($state.current.name == 'user.profile') {
+                $scope.formData.email = $scope.user.email;
+                $scope.formData.fullname = $scope.user.displayName;
+            }
+        }
     };
 
     $scope.ui = {
         getPageName: function() {
             switch($scope.currentState) {
                 case 'user.login': 
-                    return 'Login';
+                    return {pageName: 'Login', buttonCaption: 'Login'};
                 case 'user.signup': 
-                    return 'Sign up';                    
+                    return {pageName: 'Sign up', buttonCaption: 'Sign up'};
                 default: 
-                    return 'Profile';
+                    return {pageName: 'Profile', buttonCaption: 'Update profile'};
             }
         }
     }
 
     $scope.methods = {
         signup: function() {
+            var newUser = null;
             var fullname = $scope.formData.fullname;
             var email = $scope.formData.email;
             var password = $scope.formData.password;
 
             firebase.auth().createUserWithEmailAndPassword(email, password).then(function() {
-                firebase.auth().signInWithEmailAndPassword(email, password).then(function() {
-                    firebase.auth().user.updateProfile({
+                firebase.auth().signInWithEmailAndPassword(email, password).then(function(res) {
+                    newUser = res.user;
+
+                    newUser.updateProfile({
                         displayName: fullname
+                    }).then(function(res) {
+                        ZNotif('Profile', 'Profile updated successfully');
+                    }).catch(function(error) {
+                        // Handle Errors here.
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+        
+                        console.error('Update user profile error', errorMessage);
+                        ZNotif('Update user profile error', errorMessage, 'error');
                     });
+                }).catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+    
+                    console.error('Authenticate new user error', errorMessage);
+                    ZNotif('Authenticate new user error', errorMessage, 'error');
                 });
-            })
-            .catch(function(error) {
+            }).catch(function(error) {
                 // Handle Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
+
+                console.error('Create new user error', errorMessage);
+                ZNotif('Create new user error', errorMessage, 'error');
             });
         },
         updateProfile: function() {
-            var user = firebase.auth().user;
-
+            var user = firebase.auth().currentUser;
             if (user) {
                 var fullname = $scope.formData.fullname;
-                var email = $scope.formData.email;
-                var password = $scope.formData.password;
                 
                 user.updateProfile({
-                    displayName: $scope.formData.fullname,
+                    displayName: fullname,
                     //photoURL: "https://example.com/jane-q-user/profile.jpg"
                 }).then(function() {
-                    ZNotif('Profile', 'Your profile updated successfully');
                     // Update successful.
-                }).catch(function(error) {
-                    ZNotif('Profile', error.message, 'error');
-                });
+                    ZNotif('Profile', 'Your profile updated successfully');
 
+                    // update password
+                    if ($scope.formData.password.length > 0) {
+                        user.updatePassword($scope.formData.password).then(function() {
+                            ZNotif('Password update', 'Password updated successfully. Please re-login');
+
+                            // logout
+                            $state.go('user.logout');
+                        }).catch(function(error) {
+                            console.error('Password update error', error)
+                            ZNotif('Password update error', error.message, 'error');
+                        });
+                    }
+    
+                }).catch(function(error) {
+                    console.error('Profile update error', error)
+                    ZNotif('Profile update error', error.message, 'error');
+                });
+            } else {
+                ZNotif('Profile update', 'Please re-login to update the profile', 'error');
             }
         },
         login: function() {
@@ -67,6 +108,7 @@ function($scope, $http, $state, ZNotif) {
                 $state.go('home');
             })
             .catch(function(error) {
+                console.error('Authentication error', error.message);
                 ZNotif('Authentication error', error.message, 'error');
                 $scope.$apply(function() {
                     $scope.formData.errorMessage = error.message;
@@ -75,18 +117,32 @@ function($scope, $http, $state, ZNotif) {
         },
 
         logout: function() {
-            var promise = firebase.auth().signOut();
-            
-            promise.then(function() {
-                // Sign-out successful.
+            var promise = firebase.auth().signOut().then(function() {
+                $state.go('home');
             }).catch(function(error) {
+                console.error('cannot log out', error.message);
+                ZNotif('cannot log out', error.message)
                 // An error happened.
             });
 
             return promise;
         },
 
-        // general submit buton
+        resetPassword: function() {
+            var user = firebase.auth().currentUser;
+            if (user) {
+                firebase.auth().sendPasswordResetEmail(user.email).then(function() {
+                    ZNotif('Reset password', 'Reset password email has been sent. Please check your email');
+                }).catch(function(error) {
+                    console.error('Cannot send reset password email', error.message);
+                    ZNotif('Cannot send reset password email', error.message)
+                });
+            } else {
+                console.error('Cannot reset password. No authenticated user');
+            }
+        },
+
+        // general submit button
         submit: function() {
             switch($scope.currentState) {
                 case 'user.login': 
@@ -101,13 +157,21 @@ function($scope, $http, $state, ZNotif) {
         }
     };
 
-    // check current state
+    /////////////////////////////////////////////// initial script /////////////////////
+
+    // check if current state is LOGOUT
     if ($state.current.name == 'user.logout') {
-        $scope.methods.logout().then(function() {
-            $scope.$apply(function() {
-                $state.go('home');
-            });
-        });
+        $scope.methods.logout();
     }
 
+    // watch rootScope user (when auth state changes)
+    $scope.$watch('$root.user', function() {
+        $scope.user = $rootScope.user;
+
+        // load user's data into the form (for "profile" page)
+        $scope.formData.init();
+    });
+
+    // load 
+    $scope.formData.init();
 }]);
