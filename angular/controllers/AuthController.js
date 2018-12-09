@@ -1,12 +1,19 @@
-app.controller('AuthController', ['$scope', '$http', '$state', 'ZNotif', 
-function($scope, $http, $state, ZNotif) {
+app.controller('AuthController', ['$scope', '$rootScope', '$http', '$state', 'ZNotif', 
+function($scope, $rootScope, $http, $state, ZNotif) {
 
     $scope.formData = {
         email: '',
         password: '',
         fullname: '',
 
-        errorMessage: ''
+        errorMessage: '',
+
+        init: function() {
+            if ($state.current.name == 'user.profile') {
+                $scope.formData.email = $scope.user.email;
+                $scope.formData.fullname = $scope.user.displayName;
+            }
+        }
     };
 
     $scope.ui = {
@@ -24,21 +31,42 @@ function($scope, $http, $state, ZNotif) {
 
     $scope.methods = {
         signup: function() {
+            var newUser = null;
             var fullname = $scope.formData.fullname;
             var email = $scope.formData.email;
             var password = $scope.formData.password;
 
             firebase.auth().createUserWithEmailAndPassword(email, password).then(function() {
-                firebase.auth().signInWithEmailAndPassword(email, password).then(function() {
-                    firebase.auth().user.updateProfile({
+                firebase.auth().signInWithEmailAndPassword(email, password).then(function(res) {
+                    newUser = res.user;
+
+                    newUser.updateProfile({
                         displayName: fullname
+                    }).then(function(res) {
+                        ZNotif('Profile', 'Profile updated successfully');
+                    }).catch(function(error) {
+                        // Handle Errors here.
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+        
+                        console.error('Update user profile error', errorMessage);
+                        ZNotif('Update user profile error', errorMessage, 'error');
                     });
+                }).catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+    
+                    console.error('Authenticate new user error', errorMessage);
+                    ZNotif('Authenticate new user error', errorMessage, 'error');
                 });
-            })
-            .catch(function(error) {
+            }).catch(function(error) {
                 // Handle Errors here.
                 var errorCode = error.code;
                 var errorMessage = error.message;
+
+                console.error('Create new user error', errorMessage);
+                ZNotif('Create new user error', errorMessage, 'error');
             });
         },
         updateProfile: function() {
@@ -101,7 +129,9 @@ function($scope, $http, $state, ZNotif) {
         }
     };
 
-    // check current state
+    /////////////////////////////////////////////// initial script /////////////////////
+
+    // check if current state is LOGOUT
     if ($state.current.name == 'user.logout') {
         $scope.methods.logout().then(function() {
             $scope.$apply(function() {
@@ -110,4 +140,14 @@ function($scope, $http, $state, ZNotif) {
         });
     }
 
+    // watch rootScope user (when auth state changes)
+    $scope.$watch('$root.user', function() {
+        $scope.user = $rootScope.user;
+
+        // load user's data into the form (for "profile" page)
+        $scope.formData.init();
+    });
+
+    // load 
+    $scope.formData.init();
 }]);

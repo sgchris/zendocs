@@ -1,9 +1,9 @@
-<div ng-if="user">
+<div ng-if="user && currentState != 'user.profile'">
     <h1 ng-if="user">Already logged in!</h1>
 </div>
 
 
-<div ng-if="!user">
+<div ng-if="!user || currentState == 'user.profile'">
     <h1>{{ ui.getPageName() }}</h1>
 
     <form name="sentMessage" id="contactForm" novalidate ng-submit="methods.submit();">
