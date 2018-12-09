@@ -70,20 +70,33 @@ function($scope, $rootScope, $http, $state, ZNotif) {
             });
         },
         updateProfile: function() {
-            if ($scope.user) {
-                var user = firebase.auth().currentUser;
-                console.log('user', user);
+            var user = firebase.auth().currentUser;
+            if (user) {
                 var fullname = $scope.formData.fullname;
                 
                 user.updateProfile({
                     displayName: fullname,
                     //photoURL: "https://example.com/jane-q-user/profile.jpg"
                 }).then(function() {
-                    ZNotif('Profile', 'Your profile updated successfully');
                     // Update successful.
+                    ZNotif('Profile', 'Your profile updated successfully');
+
+                    // update password
+                    if ($scope.formData.password.length > 0) {
+                        user.updatePassword($scope.formData.password).then(function() {
+                            ZNotif('Password update', 'Password updated successfully. Please re-login');
+
+                            // logout
+                            $state.go('user.logout');
+                        }).catch(function(error) {
+                            console.error('Password update error', error)
+                            ZNotif('Password update error', error.message, 'error');
+                        });
+                    }
+    
                 }).catch(function(error) {
                     console.error('Profile update error', error)
-                    ZNotif('Profile', error.message, 'error');
+                    ZNotif('Profile update error', error.message, 'error');
                 });
             } else {
                 ZNotif('Profile update', 'Please re-login to update the profile', 'error');
@@ -95,6 +108,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                 $state.go('home');
             })
             .catch(function(error) {
+                console.error('Authentication error', error.message);
                 ZNotif('Authentication error', error.message, 'error');
                 $scope.$apply(function() {
                     $scope.formData.errorMessage = error.message;
@@ -103,13 +117,8 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         },
 
         logout: function() {
-            console.log('logout')
             var promise = firebase.auth().signOut().then(function() {
-                console.log('logout success');
-                if ($state.current.name == 'user.logout') {
-                    console.log('go home');
-                    $state.go('home');
-                }
+                $state.go('home');
             }).catch(function(error) {
                 console.error('cannot log out', error.message);
                 ZNotif('cannot log out', error.message)
@@ -120,8 +129,9 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         },
 
         resetPassword: function() {
-            if ($scope.user) {
-                firebase.auth().sendPasswordResetEmail($scope.user.email).then(function() {
+            var user = firebase.auth().currentUser;
+            if (user) {
+                firebase.auth().sendPasswordResetEmail(user.email).then(function() {
                     ZNotif('Reset password', 'Reset password email has been sent. Please check your email');
                 }).catch(function(error) {
                     console.error('Cannot send reset password email', error.message);
