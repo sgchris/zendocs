@@ -54,14 +54,7 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             $rootScope.$apply(function() {
-                $rootScope.user = {
-                    uid: user.uid,
-                    displayName: user.displayName,
-                    email: user.email,
-                    emailVerified: user.emailVerified,
-                    photoURL: user.photoURL,
-                    isAnonymous: user.isAnonymous
-                };
+                $rootScope.user = user;
             });
         } else {
             $rootScope.user = false;

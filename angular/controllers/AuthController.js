@@ -74,13 +74,9 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                 var user = firebase.auth().currentUser;
                 console.log('user', user);
                 var fullname = $scope.formData.fullname;
-                var email = $scope.formData.email;
-                var password = $scope.formData.password;
                 
                 user.updateProfile({
                     displayName: fullname,
-                    email: email,
-                    password: password,
                     //photoURL: "https://example.com/jane-q-user/profile.jpg"
                 }).then(function() {
                     ZNotif('Profile', 'Your profile updated successfully');
@@ -107,15 +103,33 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         },
 
         logout: function() {
-            var promise = firebase.auth().signOut();
-            
-            promise.then(function() {
-                // Sign-out successful.
+            console.log('logout')
+            var promise = firebase.auth().signOut().then(function() {
+                console.log('logout success');
+                if ($state.current.name == 'user.logout') {
+                    console.log('go home');
+                    $state.go('home');
+                }
             }).catch(function(error) {
+                console.error('cannot log out', error.message);
+                ZNotif('cannot log out', error.message)
                 // An error happened.
             });
 
             return promise;
+        },
+
+        resetPassword: function() {
+            if ($scope.user) {
+                firebase.auth().sendPasswordResetEmail($scope.user.email).then(function() {
+                    ZNotif('Reset password', 'Reset password email has been sent. Please check your email');
+                }).catch(function(error) {
+                    console.error('Cannot send reset password email', error.message);
+                    ZNotif('Cannot send reset password email', error.message)
+                });
+            } else {
+                console.error('Cannot reset password. No authenticated user');
+            }
         },
 
         // general submit button
@@ -137,11 +151,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
 
     // check if current state is LOGOUT
     if ($state.current.name == 'user.logout') {
-        $scope.methods.logout().then(function() {
-            $scope.$apply(function() {
-                $state.go('home');
-            });
-        });
+        $scope.methods.logout();
     }
 
     // watch rootScope user (when auth state changes)

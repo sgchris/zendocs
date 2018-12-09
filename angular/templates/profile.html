@@ -1,9 +1,13 @@
 <div ng-if="user && currentState != 'user.profile'">
-    <h1 ng-if="user">Already logged in!</h1>
+    <h1>Already logged in!</h1>
 </div>
 
 
-<div ng-if="!user || currentState == 'user.profile'">
+<div ng-if="!user && currentState == 'user.profile'">
+    Please <a href="#!/user/login">Log in</a>
+</div>
+
+<div ng-if="(!user && currentState != 'user.profile') || (user && currentState == 'user.profile')">
     <h1>{{ ui.getPageName().pageName }}</h1>
 
     <form name="sentMessage" id="contactForm" novalidate ng-submit="methods.submit();">
@@ -21,6 +25,7 @@
             <div class="form-group floating-label-form-group controls">
                 <label>Email Address</label>
                 <input type="email" class="form-control" placeholder="Email Address"
+                    ng-disabled="currentState == 'user.profile'"
                     ng-model="formData.email"
                     id="email" required data-validation-required-message="Please
                     enter your email address.">
@@ -42,7 +47,12 @@
         <div class="alert-danger mb-3" ng-show="formData.errorMessage">{{ formData.errorMessage }}</div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary" id="loginButton" ng-attr-title="{{ ui.getPageName().buttonCaption }}">{{ ui.getPageName().buttonCaption }}</button>
+            <button type="submit" class="btn btn-primary" id="loginButton" 
+                ng-attr-title="{{ ui.getPageName().buttonCaption }}">{{ ui.getPageName().buttonCaption }}</button>
+            <button type="button" class="btn btn-default" id="resetPasswordButton" 
+                ng-if="user && currentState == 'user.profile'"
+                ng-click="methods.resetPassword()"
+                ng-attr-title="Send an email with password reset URL">Reset password</button>
         </div>
     </form>
 </div>
