@@ -117,15 +117,17 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         },
 
         logout: function() {
-            var promise = firebase.auth().signOut().then(function() {
+            if (firebase.auth().currentUser) {
+                firebase.auth().signOut().then(function() {
+                    $state.go('home');
+                }).catch(function(error) {
+                    console.error('cannot log out', error.message);
+                    ZNotif('cannot log out', error.message)
+                    // An error happened.
+                });
+            } else {
                 $state.go('home');
-            }).catch(function(error) {
-                console.error('cannot log out', error.message);
-                ZNotif('cannot log out', error.message)
-                // An error happened.
-            });
-
-            return promise;
+            }
         },
 
         resetPassword: function() {
