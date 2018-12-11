@@ -1,3 +1,3 @@
-app.controller('PostController', ['$scope', '$http', function($scope, $http) {
+app.controller('PostController', ['$scope', '$http', '$state', function($scope, $http, $state) {
     
 }]);

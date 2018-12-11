@@ -36,15 +36,17 @@
 		<script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
 		<script>
 			// Initialize Firebase
-			var config = {
+			firebase.initializeApp({
 				apiKey: "AIzaSyB07EkhVfJ6vkPCjg-8sTqsSFrcCxRFjq4",
 				authDomain: "zendocs-43700.firebaseapp.com",
 				databaseURL: "https://zendocs-43700.firebaseio.com",
 				projectId: "zendocs-43700",
 				storageBucket: "",
 				messagingSenderId: "570118287413"
-			};
-			firebase.initializeApp(config);
+			});
+
+			var FIREBASE_DB = firebase.database();
+			var POSTS = FIREBASE_DB.ref().child('posts');
 		</script>
 
 		<script src="/angular/app.js"></script>
@@ -55,7 +57,7 @@
 
 	</head>
 
-	<body ng-controller="HomeController">
+	<body>
 
 		<!-- Navigation -->
 		<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">

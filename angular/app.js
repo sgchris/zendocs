@@ -3,12 +3,16 @@ var app = angular.module('zendocs', ['ui.router']);
 // routing
 app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', function($stateProvider, $locationProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.when('', '/home').when('/', '/home').otherwise("home");
-
     $stateProvider.state('home', {
         url: '/home',
         controller: 'HomeController',
         templateUrl: '/angular/templates/home.html'
+    });
+
+    $stateProvider.state('404', {
+        url: '/404',
+        controller: 'Error404Controller',
+        templateUrl: '/angular/templates/404.html'
     });
 
     $stateProvider.state('post', {
@@ -40,6 +44,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
     });
 
     $locationProvider.hashPrefix('!');
+
+    $urlRouterProvider.when('', '/home').when('/', '/home').otherwise("404");
 }]);
 
 // defaults
