@@ -8,13 +8,21 @@ app.controller('HomeController', ['$scope', '$http', function($scope, $http) {
         // "false" is to determine the initial state
         data: false,
 
-        init: function() {
+        load: function() {
             var ref = POSTS
                 .orderByChild('created_at')
-                .limitToLast($scope.posts.resultsPerPage);
+                .limitToLast($scope.posts.resultsPerPage + ($scope.posts.resultsPerPage * $scope.posts.offset));
             // TODO: add paging (add offset)
             ref.once('value', function(snapshot) {
                 var postsList = snapshot.val();
+                
+                // leave only the first `resultsPerPage` posts
+                if (postsList && postsList.length > $scope.posts.resultsPerPage) {
+                    postsList.splice(
+                        $scope.posts.resultsPerPage, 
+                        postsList.length - $scope.posts.resultsPerPage
+                    );
+                }
 
                 // add postId to the objects
                 if (postsList) {
@@ -33,5 +41,5 @@ app.controller('HomeController', ['$scope', '$http', function($scope, $http) {
         }
     }
 
-    $scope.posts.init();
+    $scope.posts.load();
 }]);

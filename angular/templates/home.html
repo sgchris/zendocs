@@ -11,7 +11,7 @@
             <h3 class="post-subtitle">{{post.content | contentPreview}}</h3>
         </a>
         <p class="post-meta">
-            Posted by <a href="#">{{posts.usersData[post.uid]}}</a> | {{ post.created_at | timestampToRelativeDate }}
+            Posted by <a href="#">{{post.fullname}}</a> | {{ post.created_at | timestampToRelativeDate }}
         </p>
     </div>
     <hr>
@@ -22,7 +22,6 @@
 <div class="clearfix">
     <a class="btn btn-primary float-right" href="#">More &rarr;</a>
 </div>
-
 
 
 
