@@ -1,5 +1,6 @@
 # zendocs
-documentation platform (blog, PHP, markdown)
+documentation platform #blog, #PHP, #markdown
 
 ## TODO
-- check email uniqueness upon profile update
+- add paging to the homepage
+- add users images (try using fireStore)

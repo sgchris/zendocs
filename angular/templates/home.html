@@ -1,5 +1,10 @@
+<!-- initial spinner -->
+<div ng-if="posts.data === false">
+    <i class="fa fa-spinner fa-spin"></i> Loading latest posts...
+</div>
+
 <!-- Repeat the next segment -->
-<div ng-repeat="post in posts.data">
+<div ng-if="posts.data !== false" ng-repeat="post in posts.data">
     <div class="post-preview">
         <a href="#/">
             <h2 class="post-title">{{post.title}}</h2>
