@@ -6,7 +6,7 @@
 <!-- Repeat the next segment -->
 <div ng-if="posts.data !== false" ng-repeat="post in posts.data">
     <div class="post-preview">
-        <a href="#/">
+        <a href="#!/post/get/{{post.postid}}">
             <h2 class="post-title">{{post.title}}</h2>
             <h3 class="post-subtitle">{{post.content | contentPreview}}</h3>
         </a>

@@ -15,17 +15,25 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         templateUrl: '/angular/templates/404.html'
     });
 
+    // POSTS
     $stateProvider.state('post', {
-        url: '/post/:postid',
-        controller: 'PostController',
+        url: '/post',
+        controller: 'PostController'
+    });
+    $stateProvider.state('post.get', {
+        url: '/get/:postid',
         templateUrl: '/angular/templates/post.html'
     });
-
-    $stateProvider.state('user', {
-        url: '/user',
-        controller: 'AuthController',
-        templateUrl: '/angular/templates/profile.html'
+    $stateProvider.state('post.new', {
+        url: '/new',
+        templateUrl: '/angular/templates/PostForm.html'
     });
+    $stateProvider.state('post.update', {
+        url: '/update/:postid',
+        templateUrl: '/angular/templates/PostForm.html'
+    });
+
+    // USERS
     $stateProvider.state('user.profile', {
         url: '/profile',
         controller: 'AuthController',

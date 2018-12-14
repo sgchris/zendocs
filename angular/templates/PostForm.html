@@ -1,0 +1,38 @@
+<div ng-if="!user">
+    Please <a href="#!/user/login">Log in</a>
+</div>
+
+<div ng-if="user">
+    <h1>{{ posts.form.getName() }}</h1>
+
+    <form name="postForm" id="postForm" novalidate ng-submit="posts.submit();">
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Title</label>
+                <input type="text" class="form-control" placeholder="Post title" autofocus
+                    ng-model="posts.form.title"
+                    id="title" required 
+                    data-validation-required-message="Please enter post title">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Content</label>
+                <textarea class="form-control" placeholder="Post content"
+                    ng-model="posts.form.content"
+                    id="content" required 
+                    data-validation-required-message="Please enter post content">
+                <p class="help-block text-danger"></p>
+            </div>
+        </div>
+        <br>
+
+        <!-- display the authentication error message -->
+        <div class="alert-danger mb-3" ng-show="posts.form.errorMessage">{{ posts.form.errorMessage }}</div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" id="submitButton">{{ posts.form.getName() }}</button>
+        </div>
+    </form>
+</div>
