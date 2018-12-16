@@ -26,11 +26,11 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
     });
     $stateProvider.state('post.new', {
         url: '/new',
-        templateUrl: '/angular/templates/PostForm.html'
+        templateUrl: '/angular/templates/post-form.html'
     });
     $stateProvider.state('post.update', {
         url: '/update/:postid',
-        templateUrl: '/angular/templates/PostForm.html'
+        templateUrl: '/angular/templates/post-form.html'
     });
 
     // USERS

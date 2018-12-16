@@ -1,4 +1,4 @@
-app.controller('PostController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor', function($scope, $http, $state, MarkdownEditor) {
     $scope.posts = {
         form: {
             title: '',
@@ -51,5 +51,11 @@ app.controller('PostController', ['$scope', '$http', '$state', function($scope, 
             });
         } 
     };
+
+    if ($state.current.name == 'post.new') {
+        MarkdownEditor.init('content-textarea', function() {
+            console.log('SimpleMDE initialized');
+        });
+    }
 
 }]);
