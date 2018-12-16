@@ -426,3 +426,15 @@ footer .copyright {
 	font-size: 16px;
 	padding: 25px 35px;
 }
+
+input#title.input-post-title {
+	background: #FFF1B9; 
+	padding-left: 5px; 
+	padding-right: 5px;
+}
+
+textarea.input-post-description {
+	background: #FFF1B9; 
+	padding-left: 5px; 
+	padding-right: 5px;
+}

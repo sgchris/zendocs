@@ -44,9 +44,14 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
                 return;
             }
 
+            // initial content 
+            var initialContent = angular.element(targetElemObj).text();
+            console.log('initialContent', initialContent, 'angular.element(targetElemObj)', angular.element(targetElemObj));
+
             // create the element
-            var editorObj = new SimpleMDE({ 
-                element: targetElemObj 
+            editorObj = new SimpleMDE({ 
+                element: targetElemObj,
+                initialValue: initialContent
             });
 
             // call back
@@ -56,6 +61,7 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
         },
 
         val: function(newContent, attemptNumber) {
+            debugger;
             if (editorObj) {
                 if (newContent) {
                     // set value

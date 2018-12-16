@@ -3,6 +3,7 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
         form: {
             title: '',
             content: '',
+            description: '',
 
             errorMessage: '',
 
@@ -20,13 +21,31 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
 
         add: function() {
             var title = $scope.posts.form.title;
-            var content = $scope.posts.form.content;
-            console.log('title, content', title, content);
+            var description = $scope.posts.form.description;
+            var content = MarkdownEditor.val();
+            var user = firebase.auth().currentUser;
+
+            var newPost = firebase.database().ref().child('posts').push();
+            console.log('newPost', newPost);
+            newPost.set({
+                postid: newPost.key,
+                uid: user.uid,
+                fullname: user.displayName,
+
+                title: title, 
+                content: content,
+                description: description,
+                created_at: Math.floor((new Date()).getTime() / 1000),
+            });
+
+            $state.go('home');
         },
 
         update: function() {
             var title = $scope.posts.form.title;
-            var content = $scope.posts.form.content;
+            var content = MarkdownEditor.val();
+            var description = $scope.posts.form.description;
+
             console.log('title, content', title, content);
         },
 
@@ -54,7 +73,7 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
 
     if ($state.current.name == 'post.new') {
         MarkdownEditor.init('content-textarea', function() {
-            console.log('SimpleMDE initialized');
+            // .. initialized
         });
     }
 
