@@ -119,14 +119,14 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         logout: function() {
             if (firebase.auth().currentUser) {
                 firebase.auth().signOut().then(function() {
-                    $state.go('home');
+                    $state.go('home', {}, {reload:true});
                 }).catch(function(error) {
                     console.error('cannot log out', error.message);
                     ZNotif('cannot log out', error.message)
                     // An error happened.
                 });
             } else {
-                $state.go('home');
+                $state.go('home', {}, {reload:true});
             }
         },
 
