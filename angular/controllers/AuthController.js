@@ -110,7 +110,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
             .catch(function(error) {
                 console.error('Authentication error', error.message);
                 ZNotif('Authentication error', error.message, 'error');
-                $scope.$apply(function() {
+                $scope.safeApply(function() {
                     $scope.formData.errorMessage = error.message;
                 })
             });

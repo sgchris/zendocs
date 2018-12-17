@@ -13,7 +13,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
             s.src = 'https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js';
             s.onload = function() {
                 if (typeof(callbackFn) == 'function') {
-                    callbackFn();
+                    callbackFn('async');
                 }
             };
             var x = document.getElementsByTagName('script')[0];
@@ -96,7 +96,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
 
         renderHtml: function(content, callbackFn) {
             //var mdeObj = new SimpleMDE();
-            loadEditorScripts(function() {
+            loadEditorScripts(function(isAsync) {
                 // generate MDE instance
                 var elemWrapper = document.createElement('div');
                 var elem = document.createElement('textarea');
@@ -114,7 +114,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
                 delete mde;
                 
                 // call back
-                callbackFn($sce.trustAsHtml(renderedHtml));
+                callbackFn($sce.trustAsHtml(renderedHtml), isAsync);
             });
         }
     };

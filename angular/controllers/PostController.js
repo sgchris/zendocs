@@ -1,5 +1,6 @@
-app.controller('PostController', ['$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', 
-function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif) {
+app.controller('PostController', [
+    '$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', '$timeout',
+function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
     $scope.posts = {
         form: {
             postid: '',
@@ -40,7 +41,7 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif) {
                 created_at: Math.floor((new Date()).getTime() / 1000),
             });
 
-            $state.go('post.update', {postid: newPost.key}, {reload:true});
+            $state.go('post.update', {postid: newPost.key}, {reload: true});
         },
 
         update: function() {
@@ -49,14 +50,29 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif) {
             var description = $scope.posts.form.description;
             var content = MarkdownEditor.val();
 
-            var post = firebase.database().ref().child('/posts/' + postid);
-            post.set({
+            var post = firebase.database().ref().child('posts/' + postid);
+            post.update({
                 title: title,
                 description: description,
                 content: content,
             });
 
             ZNotif('Post update', 'Post updated successfully');
+        },
+
+        delete: function (postid) {
+            var post = firebase.database().ref('posts/' + postid);
+            if (post) {
+                var res = post.remove().then(function() {
+                    $state.go('home', {}, {reload: true});
+                    
+                    ZNotif('Delete post', 'Deleted successfully');
+                }).catch(function(error) {
+                    ZNotif('Delete post', error.errorMessage, 'error');
+                });
+            } else {
+                ZNotif('Delete post', 'Cannot find the post', 'error');
+            }
         },
 
         submit: function() {
@@ -73,18 +89,23 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif) {
         load: function(postid) {
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
-                $scope.$apply(function() {
+                $scope.safeApply(function() {
                     $scope.posts.form.postid = val.postid;
                     $scope.posts.form.uid = val.uid;
                     $scope.posts.form.title = val.title;
                     $scope.posts.form.description = val.description;
 
                     if ($state.current.name == 'post.get') {
-                        MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
-                            $scope.$apply(function() {
-                                // renderedHtml is provided as a $sce.trustAsHtml content
+                        MarkdownEditor.renderHtml(val.content, function(renderedHtml, isAsync) {
+                            // if "async", use $apply
+                            if (isAsync) {
+                                $scope.safeApply(function() {
+                                    // renderedHtml is provided as a $sce.trustAsHtml content
+                                    $scope.posts.form.content = renderedHtml;
+                                });
+                            } else {
                                 $scope.posts.form.content = renderedHtml;
-                            });
+                            }
                         });
                     } else {
                         $scope.posts.form.content = val.content;

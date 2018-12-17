@@ -1,5 +1,10 @@
 <h1>{{ posts.form.title }}</h1>
 <div ng-bind-html="posts.form.content"></div>
-<a href="#!/post/update/{{posts.form.postid}}" 
-    class="btn btn-outline-secondary"
-    ng-if="posts.form.uid == user.uid">Edit this post</a>
+<div>
+    <a href="#!/post/update/{{posts.form.postid}}" 
+        class="btn btn-outline-secondary"
+        ng-if="posts.form.uid == user.uid">Edit this post</a>
+    <a ng-click="posts.delete(posts.form.uid);"
+        class="btn btn-outline-danger"
+        ng-if="posts.form.uid == user.uid">Delete</a>
+</div>

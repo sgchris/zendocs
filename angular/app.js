@@ -64,6 +64,17 @@ app.config(['$httpProvider', function($httpProvider) {
 app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
     $rootScope.user = false;
 
+    $rootScope.safeApply = function (fn) {
+        var phase = this.$root.$$phase;
+        if (phase == '$apply' || phase == '$digest') {
+            if (fn && (typeof (fn) === 'function')) {
+                fn();
+            }
+        } else {
+            this.$apply(fn);
+        }
+    };
+
     // watch the "auth" status
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
