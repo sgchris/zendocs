@@ -87,7 +87,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                             ZNotif('Password update', 'Password updated successfully. Please re-login');
 
                             // logout
-                            $state.go('user.logout');
+                            $state.go('user.logout', {}, {reload:true});
                         }).catch(function(error) {
                             console.error('Password update error', error)
                             ZNotif('Password update error', error.message, 'error');
@@ -105,7 +105,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
         login: function() {
             firebase.auth().signInWithEmailAndPassword($scope.formData.email, $scope.formData.password)
             .then(function() {
-                $state.go('home');
+                $state.go('home', {}, {reload:true});
             })
             .catch(function(error) {
                 console.error('Authentication error', error.message);

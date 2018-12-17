@@ -1,6 +1,6 @@
-app.service('MarkdownEditor', ['$timeout', function($timeout) {
+app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
     var editorScriptsLoaded = false;
-    var loadEditorScripts = function() {
+    var loadEditorScripts = function(callbackFn) {
         if (!editorScriptsLoaded) {
             ///////// load CSS
             var myCSS = document.createElement( "link" );
@@ -11,10 +11,19 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
             var s = document.createElement('script');
             s.type = 'text/javascript';
             s.src = 'https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js';
+            s.onload = function() {
+                if (typeof(callbackFn) == 'function') {
+                    callbackFn();
+                }
+            };
             var x = document.getElementsByTagName('script')[0];
             x.parentNode.insertBefore(s, x);
 
             editorScriptsLoaded = true;
+        } else {
+            if (typeof(callbackFn) == 'function') {
+                callbackFn();
+            }
         }
     }
     
@@ -46,7 +55,6 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
 
             // initial content 
             var initialContent = angular.element(targetElemObj).text();
-            console.log('initialContent', initialContent, 'angular.element(targetElemObj)', angular.element(targetElemObj));
 
             // create the element
             editorObj = new SimpleMDE({ 
@@ -61,7 +69,6 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
         },
 
         val: function(newContent, attemptNumber) {
-            debugger;
             if (editorObj) {
                 if (newContent) {
                     // set value
@@ -86,6 +93,30 @@ app.service('MarkdownEditor', ['$timeout', function($timeout) {
 
             return null;
         },
+
+        renderHtml: function(content, callbackFn) {
+            //var mdeObj = new SimpleMDE();
+            loadEditorScripts(function() {
+                // generate MDE instance
+                var elemWrapper = document.createElement('div');
+                var elem = document.createElement('textarea');
+                elemWrapper.appendChild(elem);
+                document.body.appendChild(elemWrapper);
+                var mde = new SimpleMDE({
+                    element: elem
+                });
+
+                // render HTML
+                var renderedHtml = mde.options.previewRender(content);
+
+                // remove the element
+                angular.element(elemWrapper).empty().remove();
+                delete mde;
+                
+                // call back
+                callbackFn($sce.trustAsHtml(renderedHtml));
+            });
+        }
     };
 
     return retObj;

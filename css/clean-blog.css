@@ -180,7 +180,7 @@ img::-moz-selection {
 }
 
 header.masthead {
-	margin-bottom: 50px;
+	margin-bottom: 30px;
 	background: no-repeat center center;
 	background-color: #868e96;
 	background-attachment: scroll;
@@ -204,16 +204,11 @@ header.masthead .overlay {
 header.masthead .page-heading,
 header.masthead .post-heading,
 header.masthead .site-heading {
-	padding: 200px 0 150px;
+	padding: 120px 0 150px;
 	color: white;
 }
 
 @media only screen and (min-width: 768px) {
-	header.masthead .page-heading,
-	header.masthead .post-heading,
-	header.masthead .site-heading {
-		padding: 200px 0;
-	}
 }
 
 header.masthead .page-heading,
@@ -427,14 +422,11 @@ footer .copyright {
 	padding: 25px 35px;
 }
 
-input#title.input-post-title {
-	background: #FFF1B9; 
-	padding-left: 5px; 
-	padding-right: 5px;
-}
-
-textarea.input-post-description {
-	background: #FFF1B9; 
+input.input-post-field,
+textarea.input-post-field {
+	/* border: 1px solid #CCC;
+	border-radius: 5px; */
+	
 	padding-left: 5px; 
 	padding-right: 5px;
 }

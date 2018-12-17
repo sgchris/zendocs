@@ -1,6 +1,9 @@
-app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor', function($scope, $http, $state, MarkdownEditor) {
+app.controller('PostController', ['$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', 
+function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif) {
     $scope.posts = {
         form: {
+            postid: '',
+            uid: '',
             title: '',
             content: '',
             description: '',
@@ -26,7 +29,6 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
             var user = firebase.auth().currentUser;
 
             var newPost = firebase.database().ref().child('posts').push();
-            console.log('newPost', newPost);
             newPost.set({
                 postid: newPost.key,
                 uid: user.uid,
@@ -38,15 +40,23 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
                 created_at: Math.floor((new Date()).getTime() / 1000),
             });
 
-            $state.go('home');
+            $state.go('post.update', {postid: newPost.key}, {reload:true});
         },
 
         update: function() {
+            var postid = $scope.posts.form.postid;
             var title = $scope.posts.form.title;
-            var content = MarkdownEditor.val();
             var description = $scope.posts.form.description;
+            var content = MarkdownEditor.val();
 
-            console.log('title, content', title, content);
+            var post = firebase.database().ref().child('/posts/' + postid);
+            post.set({
+                title: title,
+                description: description,
+                content: content,
+            });
+
+            ZNotif('Post update', 'Post updated successfully');
         },
 
         submit: function() {
@@ -63,18 +73,42 @@ app.controller('PostController', ['$scope', '$http', '$state', 'MarkdownEditor',
         load: function(postid) {
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
-                $scope.posts.form.title = val.title;
-                $scope.posts.form.content = val.content;
+                $scope.$apply(function() {
+                    $scope.posts.form.postid = val.postid;
+                    $scope.posts.form.uid = val.uid;
+                    $scope.posts.form.title = val.title;
+                    $scope.posts.form.description = val.description;
 
-                console.log('loaded', $scope.posts.form);
+                    if ($state.current.name == 'post.get') {
+                        MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
+                            $scope.$apply(function() {
+                                // renderedHtml is provided as a $sce.trustAsHtml content
+                                $scope.posts.form.content = renderedHtml;
+                            });
+                        });
+                    } else {
+                        $scope.posts.form.content = val.content;
+
+                        MarkdownEditor.val($scope.posts.form.content);
+                    }
+                });
             });
         } 
     };
 
-    if ($state.current.name == 'post.new') {
-        MarkdownEditor.init('content-textarea', function() {
-            // .. initialized
-        });
+    // watch rootScope user (when auth state changes)
+    $scope.user = null;
+    $scope.$watch('$root.user', function() {
+        $scope.user = $rootScope.user;
+    });
+
+    if ($state.current.name == 'post.new' || $state.current.name == 'post.update') {
+        console.log('initializing',$state.current.name );
+        MarkdownEditor.init('content-textarea');
+    }
+
+    if ($state.current.name == 'post.get' || $state.current.name == 'post.update') {
+        $scope.posts.load($state.params.postid);
     }
 
 }]);
