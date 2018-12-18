@@ -92,6 +92,7 @@ img::-moz-selection {
 	background: transparent;
 }
 
+/* ZNotif styles */
 [data-notify="title"] {
 	font-weight: bold;
     border-right: 1px solid #AAA;

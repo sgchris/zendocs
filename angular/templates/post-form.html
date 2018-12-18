@@ -67,6 +67,12 @@ post is about and why it might be useful
                 <span ng-if="!posts.form.inProgress">{{ posts.form.getName() }}</span>
                 <span ng-if=" posts.form.inProgress"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
             </button>
+            <a href="#!/home" 
+                class="btn btn-outline-secondary" 
+                ng-if="currentState == 'post.new'">Cancel</a>
+            <a ng-href="#!/post/get/{{posts.form.postid}}" 
+                class="btn btn-outline-secondary" 
+                ng-if="currentState == 'post.update'">Cancel</a>
         </div>
     </form>
 </div>
