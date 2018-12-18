@@ -126,8 +126,7 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
     $scope.$watch('$root.user', function() {
         $scope.user = $rootScope.user;
     });
-
-    console.log('state name', $state.current.name);
+    
     switch ($state.current.name) {
         case 'post.new':
             $scope.posts.form.reset();

@@ -1,7 +1,35 @@
 app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
     var editorScriptsLoaded = false;
+    var editorScriptsLoadInProgress = false;
     var loadEditorScripts = function(callbackFn) {
         if (!editorScriptsLoaded) {
+
+            // if loading is in progress, call this function later (w/ timeout)
+            if (editorScriptsLoadInProgress && callbackFn) {
+                // generate a timer and attempts counter vars
+                var callbackMD5 = btoa(callbackFn);
+                var timerName = callbackMD5 + '_loadScriptsTimer';
+                var counterName = callbackMD5 + '_loadScriptsAttemptsCounter';
+
+                // cancel previous timer
+                if (window[timerName]) {
+                    $timeout.cancel(window[timerName]);
+                }
+
+                // start new timer
+                window[btoa(callbackFn) + '_loadScriptsTimer'] = $timeout(function() { 
+                    window[counterName] = window[counterName] || 0;
+
+                    if (window[counterName]++ < 40) {
+                        loadEditorScripts(callbackFn);
+                    }
+                }, 500);
+
+                return;
+            }
+            
+            editorScriptsLoadInProgress = true;
+
             ///////// load CSS
             var myCSS = document.createElement( "link" );
             myCSS.rel = "stylesheet";
@@ -15,11 +43,12 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
                 if (typeof(callbackFn) == 'function') {
                     callbackFn('async');
                 }
+
+                editorScriptsLoaded = true;
+                editorScriptsLoadInProgress = false;
             };
             var x = document.getElementsByTagName('script')[0];
             x.parentNode.insertBefore(s, x);
-
-            editorScriptsLoaded = true;
         } else {
             if (typeof(callbackFn) == 'function') {
                 callbackFn();
@@ -28,44 +57,42 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
     }
     
     var editorObj = null;
-    var targetElemObj = null;
 
     var retObj = {
         init: function(elemId, callbackFn, attemptNumber) {
-            // load the relevant JS/CSS scripts
-            loadEditorScripts();
 
-            // get the target element
-            targetElemObj = document.getElementById(elemId);
+            // get the target element (w/ retries)
+            var targetElemObj = document.getElementById(elemId);
+            if (!targetElemObj) {
+                attemptNumber = attemptNumber || 0;
 
-            if (typeof(window.SimpleMDE) == 'undefined' || !targetElemObj) {
-                if (!attemptNumber) {
-                    attemptNumber = 0;
-                }
-
-                if (attemptNumber < 20) {
+                if (attemptNumber++ < 40) {
                     $timeout(function() {
-                        retObj.init(elemId, callbackFn, attemptNumber + 1);
-                    }, 1000);
+                        retObj.init(elemId, callbackFn, attemptNumber);
+                    }, 500);
                 } else {
-                    console.error('SimpleMDE was not loaded, or target element', elemId, 'does not exist on the page');
+                    console.error('No target element for the MDE editor', elemId);
                 }
+
                 return;
             }
 
-            // initial content 
-            var initialContent = angular.element(targetElemObj).text();
+            // load the relevant JS/CSS scripts
+            loadEditorScripts(function(isAsync) {
+                // initial content 
+                var initialContent = angular.element(targetElemObj).text();
 
-            // create the element
-            editorObj = new SimpleMDE({ 
-                element: targetElemObj,
-                initialValue: initialContent
+                // create the element
+                editorObj = new SimpleMDE({ 
+                    element: targetElemObj,
+                    initialValue: initialContent
+                });
+
+                // call back
+                if (typeof(callbackFn) == 'function') {
+                    callbackFn()
+                }
             });
-
-            // call back
-            if (typeof(callbackFn) == 'function') {
-                callbackFn()
-            }
         },
 
         val: function(newContent, attemptNumber) {
