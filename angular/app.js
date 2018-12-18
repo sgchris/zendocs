@@ -18,7 +18,6 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
     // POSTS
     $stateProvider.state('post', {
         url: '/post',
-        controller: 'PostController'
     });
     $stateProvider.state('post.get', {
         url: '/get/:postid',

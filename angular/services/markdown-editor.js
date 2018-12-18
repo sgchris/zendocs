@@ -27,7 +27,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
 
                 return;
             }
-            
+
             editorScriptsLoadInProgress = true;
 
             ///////// load CSS
@@ -60,7 +60,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
 
     var retObj = {
         init: function(elemId, callbackFn, attemptNumber) {
-
+            console.log('init MDE elem', elemId);
             // get the target element (w/ retries)
             var targetElemObj = document.getElementById(elemId);
             if (!targetElemObj) {

@@ -1,6 +1,7 @@
 app.controller('PostController', [
     '$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', '$timeout',
 function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
+    console.log('post controller');
     $scope.posts = {
         form: {
             postid: '',
@@ -130,7 +131,7 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
     switch ($state.current.name) {
         case 'post.new':
             $scope.posts.form.reset();
-
+            console.log('controller: MarkdownEditor.init');
             MarkdownEditor.init('content-textarea');
             break;
         case 'post.update':
