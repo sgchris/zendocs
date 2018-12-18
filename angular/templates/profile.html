@@ -48,7 +48,11 @@
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary" id="loginButton" 
-                ng-attr-title="{{ ui.getPageName().buttonCaption }}">{{ ui.getPageName().buttonCaption }}</button>
+                ng-disabled="methods.inProgress"
+                ng-attr-title="{{ ui.getPageName().buttonCaption }}">
+                <span ng-if="!methods.inProgress">{{ ui.getPageName().buttonCaption }}</span>
+                <span ng-if=" methods.inProgress"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
+            </button>
             <button type="button" class="btn btn-default" id="resetPasswordButton" 
                 ng-if="user && currentState == 'user.profile'"
                 ng-click="methods.resetPassword()"
