@@ -61,18 +61,13 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
         },
 
         delete: function (postid) {
-            var post = firebase.database().ref('posts/' + postid);
-            if (post) {
-                var res = post.remove().then(function() {
-                    $state.go('home', {}, {reload: true});
-                    
-                    ZNotif('Delete post', 'Deleted successfully');
-                }).catch(function(error) {
-                    ZNotif('Delete post', error.errorMessage, 'error');
-                });
-            } else {
-                ZNotif('Delete post', 'Cannot find the post', 'error');
-            }
+            var post = firebase.database().ref('posts/' + postid).remove().then(function() {
+                $state.go('home', {}, {reload: true});
+                
+                ZNotif('Delete post', 'Deleted successfully');
+            }).catch(function(error) {
+                ZNotif('Delete post', error.errorMessage, 'error');
+            });
         },
 
         submit: function() {
@@ -124,7 +119,6 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
     });
 
     if ($state.current.name == 'post.new' || $state.current.name == 'post.update') {
-        console.log('initializing',$state.current.name );
         MarkdownEditor.init('content-textarea');
     }
 

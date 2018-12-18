@@ -4,7 +4,7 @@
     <a href="#!/post/update/{{posts.form.postid}}" 
         class="btn btn-outline-secondary"
         ng-if="posts.form.uid == user.uid">Edit this post</a>
-    <a ng-click="posts.delete(posts.form.uid);"
+    <a ng-click="posts.delete(posts.form.postid);"
         class="btn btn-outline-danger"
-        ng-if="posts.form.uid == user.uid">Delete</a>
+        ng-if="posts.form.uid == user.uid" data-toggle="confirmation">Delete</a>
 </div>

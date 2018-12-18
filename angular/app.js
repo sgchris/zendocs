@@ -65,6 +65,11 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
     $rootScope.user = false;
 
     $rootScope.safeApply = function (fn) {
+        if (!this || !this.$root) {
+            fn();
+            return;
+        }
+        
         var phase = this.$root.$$phase;
         if (phase == '$apply' || phase == '$digest') {
             if (fn && (typeof (fn) === 'function')) {
