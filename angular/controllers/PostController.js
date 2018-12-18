@@ -3,6 +3,8 @@ app.controller('PostController', [
 function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
     $scope.posts = {
         form: {
+            inProgress: false,
+
             postid: '',
             uid: '',
             title: '',
@@ -50,10 +52,12 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
             });
 
             ZNotif('New post', 'Post added successfully');
-            $state.go('home', {}, {reload: true});
+            $state.go('home');
         },
 
         update: function() {
+            $scope.posts.form.inProgress = true;
+
             var postid = $scope.posts.form.postid;
             var title = $scope.posts.form.title;
             var description = $scope.posts.form.description;
@@ -64,18 +68,27 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
                 title: title,
                 description: description,
                 content: content,
+            }).then(function() {
+                ZNotif('Post update', 'Post updated successfully');
+            }).finally(function() {
+                $scope.safeApply(function() {
+                    $scope.posts.form.inProgress = false;
+                });
             });
-
-            ZNotif('Post update', 'Post updated successfully');
         },
 
         delete: function (postid) {
+            $scope.posts.form.inProgress = true;
             var post = firebase.database().ref('posts/' + postid).remove().then(function() {
-                $state.go('home', {}, {reload: true});
+                $state.go('home');
                 
                 ZNotif('Delete post', 'Deleted successfully');
             }).catch(function(error) {
                 ZNotif('Delete post', error.errorMessage, 'error');
+            }).finally(function() {
+                $scope.safeApply(function() {
+                    $scope.posts.form.inProgress = false;
+                });
             });
         },
 
@@ -90,7 +103,9 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
             }
         },
 
+        loadInProgress: false,
         load: function(postid) {
+            $scope.posts.loadInProgress = true;
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
                 $scope.safeApply(function() {
@@ -100,22 +115,21 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
                     $scope.posts.form.description = val.description;
 
                     if ($state.current.name == 'post.get') {
-                        MarkdownEditor.renderHtml(val.content, function(renderedHtml, isAsync) {
-                            // if "async", use $apply
-                            if (isAsync) {
-                                $scope.safeApply(function() {
-                                    // renderedHtml is provided as a $sce.trustAsHtml content
-                                    $scope.posts.form.content = renderedHtml;
-                                });
-                            } else {
+                        MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
+                            $scope.safeApply(function() {
+                                // renderedHtml is provided as a $sce.trustAsHtml content
                                 $scope.posts.form.content = renderedHtml;
-                            }
+                            });
                         });
                     } else {
                         $scope.posts.form.content = val.content;
 
                         MarkdownEditor.val($scope.posts.form.content);
                     }
+                });
+            }).finally(function() {
+                $scope.safeApply(function() {
+                    $scope.posts.loadInProgress = false;
                 });
             });
         } 

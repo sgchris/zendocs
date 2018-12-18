@@ -3,7 +3,7 @@ app.service('ZNotif', function() {
         var opts = {
             title: title, 
             message: message,
-            icon: 'fas fa-exclamation-circle'
+            icon: 'fas fa-exclamation-circle',
         };
         if (type == 'warning') {
             opts['icon'] = 'fas fa-exclamation-triangle';
