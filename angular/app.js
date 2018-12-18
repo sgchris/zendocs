@@ -36,21 +36,28 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
     });
 
     // USERS
+    $stateProvider.state('user', {
+        url: '/user',
+    });
     $stateProvider.state('user.profile', {
         url: '/profile',
         controller: 'AuthController',
+        templateUrl: '/angular/templates/profile.html'
     });
     $stateProvider.state('user.signup', {
         url: '/signup',
         controller: 'AuthController',
+        templateUrl: '/angular/templates/profile.html'
     });
     $stateProvider.state('user.login', {
         url: '/login',
         controller: 'AuthController',
+        templateUrl: '/angular/templates/profile.html'
     });
     $stateProvider.state('user.logout', {
         url: '/logout',
         controller: 'AuthController',
+        templateUrl: '/angular/templates/profile.html'
     });
 
     $locationProvider.hashPrefix('!');
