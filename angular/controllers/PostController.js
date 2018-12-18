@@ -11,6 +11,14 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
 
             errorMessage: '',
 
+            reset: function() {
+                $scope.posts.form.postid = '';
+                $scope.posts.form.uid = '';
+                $scope.posts.form.title = '';
+                $scope.posts.form.content = '';
+                $scope.posts.form.description = '';
+            },
+
             getName: function() {
                 switch ($state.current.name) {
                     case 'post.new':
@@ -41,7 +49,8 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
                 created_at: Math.floor((new Date()).getTime() / 1000),
             });
 
-            $state.go('post.update', {postid: newPost.key}, {reload: true});
+            ZNotif('New post', 'Post added successfully');
+            $state.go('home', {}, {reload: true});
         },
 
         update: function() {
@@ -118,12 +127,19 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
         $scope.user = $rootScope.user;
     });
 
-    if ($state.current.name == 'post.new' || $state.current.name == 'post.update') {
-        MarkdownEditor.init('content-textarea');
-    }
+    console.log('state name', $state.current.name);
+    switch ($state.current.name) {
+        case 'post.new':
+            $scope.posts.form.reset();
 
-    if ($state.current.name == 'post.get' || $state.current.name == 'post.update') {
-        $scope.posts.load($state.params.postid);
+            MarkdownEditor.init('content-textarea');
+            break;
+        case 'post.update':
+            MarkdownEditor.init('content-textarea');
+            $scope.posts.load($state.params.postid);
+            break;
+        case 'post.get':
+            $scope.posts.load($state.params.postid);
     }
 
 }]);

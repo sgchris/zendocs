@@ -22,14 +22,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
     });
     $stateProvider.state('post.get', {
         url: '/get/:postid',
+        controller: 'PostController',
         templateUrl: '/angular/templates/post.html'
     });
     $stateProvider.state('post.new', {
         url: '/new',
+        controller: 'PostController',
         templateUrl: '/angular/templates/post-form.html'
     });
     $stateProvider.state('post.update', {
         url: '/update/:postid',
+        controller: 'PostController',
         templateUrl: '/angular/templates/post-form.html'
     });
 
@@ -69,7 +72,7 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
             fn();
             return;
         }
-        
+
         var phase = this.$root.$$phase;
         if (phase == '$apply' || phase == '$digest') {
             if (fn && (typeof (fn) === 'function')) {
