@@ -3,8 +3,7 @@
 </div>
 
 <div ng-if="user">
-    <h1>{{ posts.form.getName() }}</h1>
-
+    <h1>{{ posts.form.getName() }} <i ng-if="posts.loadInProgress" class="fa fa-spinner fa-spin"></i></h1>
     <form name="postForm" id="postForm" novalidate ng-submit="posts.submit();">
         <div class="control-group">
             <div class="form-group floating-label-form-group controls">
@@ -64,7 +63,16 @@ post is about and why it might be useful
         <!-- display the authentication error message -->
         <div class="alert-danger mb-3" ng-show="posts.form.errorMessage">{{ posts.form.errorMessage }}</div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">{{ posts.form.getName() }}</button>
+            <button type="submit" class="btn btn-primary" ng-disabled="posts.form.inProgress">
+                <span ng-if="!posts.form.inProgress">{{ posts.form.getName() }}</span>
+                <span ng-if=" posts.form.inProgress"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
+            </button>
+            <a href="#!/home" 
+                class="btn btn-outline-secondary" 
+                ng-if="currentState == 'post.new'">Cancel</a>
+            <a ng-href="#!/post/get/{{posts.form.postid}}" 
+                class="btn btn-outline-secondary" 
+                ng-if="currentState == 'post.update'">Cancel</a>
         </div>
     </form>
 </div>

@@ -92,6 +92,14 @@ img::-moz-selection {
 	background: transparent;
 }
 
+/* ZNotif styles */
+[data-notify="title"] {
+	font-weight: bold;
+    border-right: 1px solid #AAA;
+    padding-right: 10px;
+    margin-right: 10px;
+}
+
 #mainNav {
 	position: absolute;
 	border-bottom: 1px solid #e9ecef;

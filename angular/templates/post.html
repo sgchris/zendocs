@@ -1,4 +1,4 @@
-<h1>{{ posts.form.title }}</h1>
+<h1>{{ posts.form.title }} <i ng-if="posts.loadInProgress" class="fa fa-spinner fa-spin"></i></h1>
 <div ng-bind-html="posts.form.content"></div>
 <div>
     <a href="#!/post/update/{{posts.form.postid}}" 
