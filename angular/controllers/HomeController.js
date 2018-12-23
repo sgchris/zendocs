@@ -1,4 +1,4 @@
-app.controller('HomeController', ['$scope', '$http', function($scope, $http) {
+app.controller('HomeController', ['$scope', function ($scope) {
 
     $scope.posts = {
         // paging section
@@ -6,40 +6,50 @@ app.controller('HomeController', ['$scope', '$http', function($scope, $http) {
         resultsPerPage: 20,
 
         // "false" is to determine the initial state
+        // data is the one displayed on the page
         data: false,
+        // "allData" is all the data from the DB (due to firebase substring limitation)
+        allData: false,
+        lastUpdateTime: 0,
+        updateInterval: 10 * 60 * 1000, // update data every 10 minutes
 
-        load: function() {
-            var ref = POSTS
-                .orderByChild('created_at')
-                .limitToLast($scope.posts.resultsPerPage + ($scope.posts.resultsPerPage * $scope.posts.offset));
-            // TODO: add paging (add offset)
-            ref.once('value', function(snapshot) {
-                var postsList = snapshot.val();
-                
-                // leave only the first `resultsPerPage` posts
-                if (postsList && postsList.length > $scope.posts.resultsPerPage) {
-                    postsList.splice(
-                        $scope.posts.resultsPerPage, 
-                        postsList.length - $scope.posts.resultsPerPage
-                    );
+        // take the 
+        setData: function () {
+            var totalPosts = $scope.posts.allData ? $scope.posts.allData.length : 0;
+            if (totalPosts == 0) {
+                $scope.posts.data = [];
+            } else {
+                var initialIndex = totalPosts - ($scope.posts.offset + 1) * $scope.posts.resultsPerPage;
+                if (initialIndex < 0) {
+                    initialIndex = 0;
                 }
 
-                // add postId to the objects
-                if (postsList) {
-                    Object.keys(postsList).forEach(function(postId) {
-                        postsList[postId].postid = postId;
+                $scope.posts.data = $scope.posts.allData
+                    .slice(initialIndex, $scope.posts.resultsPerPage)
+                    .reverse();
+            }
+        },
+
+        load: function () {
+            var currentTimestamp = Math.floor((new Date()).getTime() / 1000);
+            if (
+                $scope.posts.allData === false || 
+                $scope.posts.lastUpdateTime === 0 || 
+                $scope.posts.lastUpdateTime < currentTimestamp - $scope.posts.updateInterval
+            ) {
+                var ref = window.POSTS.orderByChild('created_at');
+                // TODO: add paging (add offset)
+                ref.once('value', function (snapshot) {
+                    $scope.posts.allData = Object.values(snapshot.val());
+                    $scope.safeApply(function () {
+                        $scope.posts.setData();
                     });
-
-                    postsList = Object.values(postsList).reverse();
-                }
-
-                // set the data locally
-                $scope.$apply(function() {
-                    $scope.posts.data = postsList;
                 });
-            });
+            } else {
+                $scope.posts.setData();
+            }
         }
-    }
+    };
 
     $scope.posts.load();
 }]);

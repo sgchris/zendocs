@@ -27,7 +27,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                     return {pageName: 'Profile', buttonCaption: 'Update profile'};
             }
         }
-    }
+    };
 
     $scope.methods = {
         inProgress: false,
@@ -104,7 +104,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                             // logout
                             $state.go('user.logout', {}, {reload:true});
                         }).catch(function(error) {
-                            console.error('Password update error', error)
+                            console.error('Password update error', error);
                             ZNotif('Password update error', error.message, 'error');
                         }).finally(function() {
                             $scope.safeApply(function() {
@@ -114,7 +114,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                     }
     
                 }).catch(function(error) {
-                    console.error('Profile update error', error)
+                    console.error('Profile update error', error);
                     ZNotif('Profile update error', error.message, 'error');
                 }).finally(function() {
                     $scope.safeApply(function() {
@@ -149,7 +149,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                     $state.go('home', {}, {reload:true});
                 }).catch(function(error) {
                     console.error('cannot log out', error.message);
-                    ZNotif('cannot log out', error.message)
+                    ZNotif('cannot log out', error.message);
                     // An error happened.
                 }).finally(function() {
                     $scope.safeApply(function() {
@@ -169,7 +169,7 @@ function($scope, $rootScope, $http, $state, ZNotif) {
                     ZNotif('Reset password', 'Reset password email has been sent. Please check your email');
                 }).catch(function(error) {
                     console.error('Cannot send reset password email', error.message);
-                    ZNotif('Cannot send reset password email', error.message)
+                    ZNotif('Cannot send reset password email', error.message);
                 }).finally(function() {
                     $scope.safeApply(function() {
                         $scope.methods.inProgress = false;

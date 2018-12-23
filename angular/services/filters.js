@@ -37,5 +37,5 @@ app.filter('contentPreview', [function() {
     return function(content) {
         // just reluctantly cut the text
         return content.substr(0, 500); 
-    }
+    };
 }]);

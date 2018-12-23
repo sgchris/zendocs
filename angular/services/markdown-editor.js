@@ -54,7 +54,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
                 callbackFn();
             }
         }
-    }
+    };
     
     var editorObj = null;
 
@@ -89,7 +89,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
 
                 // call back
                 if (typeof(callbackFn) == 'function') {
-                    callbackFn()
+                    callbackFn();
                 }
             });
         },
@@ -137,7 +137,6 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
 
                 // remove the element
                 angular.element(elemWrapper).empty().remove();
-                delete mde;
                 
                 // call back
                 callbackFn($sce.trustAsHtml(renderedHtml), isAsync);

@@ -6,11 +6,11 @@ app.service('ZNotif', function() {
             icon: 'fas fa-exclamation-circle',
         };
         if (type == 'warning') {
-            opts['icon'] = 'fas fa-exclamation-triangle';
-            opts['type'] = 'warning';
+            opts.icon = 'fas fa-exclamation-triangle';
+            opts.type = 'warning';
         } else if (type == 'error') {
-            opts['icon'] = 'fas fa-exclamation-circle';
-            opts['type'] = 'danger';
+            opts.icon = 'fas fa-exclamation-circle';
+            opts.type = 'danger';
         }
 
         $.notify(opts);
