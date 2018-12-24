@@ -3,7 +3,7 @@ app.controller('HomeController', ['$scope', '$rootScope', function($scope, $root
     $scope.posts = {
         // paging section
         offset: 0,
-        resultsPerPage: 1,//20,
+        resultsPerPage: 20,
 
         searchString: '',
 
@@ -23,12 +23,15 @@ app.controller('HomeController', ['$scope', '$rootScope', function($scope, $root
 
                     // check that all the search strings match the 
                     searchStrings.forEach(function(searchString) {
+                        searchString = searchString.toLowerCase();
+
                         // check if this post matches the current search string
                         // (and all the previous search strings)
                         if (
                             itemIsValid && 
-                            post.title.indexOf($scope.posts.searchString) < 0 &&
-                            post.content.indexOf($scope.posts.searchString) < 0
+                            post.title.toLowerCase().indexOf(searchString) < 0 &&
+                            post.description.toLowerCase().indexOf(searchString) < 0 &&
+                            post.content.toLowerCase().indexOf(searchString) < 0
                         ) {
                             itemIsValid = false;
                         }
@@ -58,10 +61,6 @@ app.controller('HomeController', ['$scope', '$rootScope', function($scope, $root
         // or we're already on the last page
         previousPageLinkShouldAppear: function() {
             var numOfRelevantPosts = $scope.posts.filterResultsBySearchString($scope.posts.allData).length;
-            console.log(
-                '$scope.posts.offset + 1', $scope.posts.offset + 1, 
-                'Math.floor(numOfRelevantPosts / $scope.posts.resultsPerPage)', Math.ceil(numOfRelevantPosts / $scope.posts.resultsPerPage)
-            );
             return ($scope.posts.offset + 1) < Math.ceil(numOfRelevantPosts / $scope.posts.resultsPerPage);
         },
 
