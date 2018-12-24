@@ -1,9 +1,50 @@
-app.controller('HomeController', ['$scope', function ($scope) {
+app.controller('HomeController', ['$scope', '$rootScope', function($scope, $rootScope) {
 
     $scope.posts = {
         // paging section
         offset: 0,
-        resultsPerPage: 20,
+        resultsPerPage: 1,//20,
+
+        searchString: '',
+
+        // filter the data (array of posts), by the 'searchString'
+        filterResultsBySearchString: function(data) {
+            if (!data || data.length === 0) {
+                return [];
+            }
+
+            // filter the data if a search string is defined
+            if ($scope.posts.searchString.length > 0) {
+                var newList = [];
+
+                data.forEach(function(post) {
+                    var searchStrings = $scope.posts.searchString.split(/\s+/),
+                        itemIsValid = true;
+
+                    // check that all the search strings match the 
+                    searchStrings.forEach(function(searchString) {
+                        // check if this post matches the current search string
+                        // (and all the previous search strings)
+                        if (
+                            itemIsValid && 
+                            post.title.indexOf($scope.posts.searchString) < 0 &&
+                            post.content.indexOf($scope.posts.searchString) < 0
+                        ) {
+                            itemIsValid = false;
+                        }
+                    });
+
+                    if (itemIsValid) {
+                        newList.push(post);
+                    }
+                });
+
+                return newList;
+            }
+
+            // return the new set
+            return data;
+        },
 
         // "false" is to determine the initial state
         // data is the one displayed on the page
@@ -13,23 +54,55 @@ app.controller('HomeController', ['$scope', function ($scope) {
         lastUpdateTime: 0,
         updateInterval: 10 * 60 * 1000, // update data every 10 minutes
 
-        // take the 
+        // boolean function that returns whether "next" button should appear,
+        // or we're already on the last page
+        previousPageLinkShouldAppear: function() {
+            var numOfRelevantPosts = $scope.posts.filterResultsBySearchString($scope.posts.allData).length;
+            console.log(
+                '$scope.posts.offset + 1', $scope.posts.offset + 1, 
+                'Math.floor(numOfRelevantPosts / $scope.posts.resultsPerPage)', Math.ceil(numOfRelevantPosts / $scope.posts.resultsPerPage)
+            );
+            return ($scope.posts.offset + 1) < Math.ceil(numOfRelevantPosts / $scope.posts.resultsPerPage);
+        },
+
+        // move to previous page
+        previousPage: function() {
+            ++$scope.posts.offset;
+            $scope.posts.setData();
+        },
+
+        nextPage: function() {
+            if ($scope.posts.offset > 0) {
+                --$scope.posts.offset;
+                $scope.posts.setData();
+            }
+        },
+
+        // set the relevant data for the view
         setData: function () {
-            var totalPosts = $scope.posts.allData ? $scope.posts.allData.length : 0;
+
+            // filter the data
+            var postsList = $scope.posts.filterResultsBySearchString($scope.posts.allData);
+
+            // set only the relevant data for the view
+            var totalPosts = postsList ? postsList.length : 0;
             if (totalPosts == 0) {
                 $scope.posts.data = [];
             } else {
                 var initialIndex = totalPosts - ($scope.posts.offset + 1) * $scope.posts.resultsPerPage;
-                if (initialIndex < 0) {
-                    initialIndex = 0;
-                }
+                $scope.posts.data = initialIndex < 0 ? 
+                    postsList.slice(0, initialIndex + $scope.posts.resultsPerPage) : 
+                    postsList.slice(initialIndex, initialIndex + $scope.posts.resultsPerPage);
 
-                $scope.posts.data = $scope.posts.allData
-                    .slice(initialIndex, $scope.posts.resultsPerPage)
-                    .reverse();
+                // reverse the data to display in a desc order
+                $scope.posts.data = $scope.posts.data.reverse();
+
             }
         },
 
+        // load data from the server (periodically) and store locally ALL(!) the data
+        // we store all the data for the searching purposes (FireBase has limitation
+        // to filter results by a search string)
         load: function () {
             var currentTimestamp = Math.floor((new Date()).getTime() / 1000);
             if (
@@ -40,8 +113,9 @@ app.controller('HomeController', ['$scope', function ($scope) {
                 var ref = window.POSTS.orderByChild('created_at');
                 // TODO: add paging (add offset)
                 ref.once('value', function (snapshot) {
-                    $scope.posts.allData = Object.values(snapshot.val());
                     $scope.safeApply(function () {
+                        $scope.posts.lastUpdateTime = currentTimestamp;
+                        $scope.posts.allData = Object.values(snapshot.val());
                         $scope.posts.setData();
                     });
                 });
@@ -52,4 +126,10 @@ app.controller('HomeController', ['$scope', function ($scope) {
     };
 
     $scope.posts.load();
+
+    $scope.$on('searchStringChanged', function(event, obj) {
+        $scope.posts.searchString = obj.string;
+        $scope.posts.offset = 0;
+        $scope.posts.setData();
+    });
 }]);

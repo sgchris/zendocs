@@ -20,26 +20,12 @@
 
 <!-- Pager -->
 <div class="clearfix">
-    <a class="btn btn-primary float-right" href="#">More &rarr;</a>
+    <a href="#" 
+        class="btn btn-outline-primary" 
+        ng-if="posts.previousPageLinkShouldAppear()"
+        ng-click="posts.previousPage();"><i class="fa fa-chevron-left"></i> Previous</a>
+    <a href="#" 
+        class="btn btn-outline-primary" 
+        ng-if="posts.offset > 0"
+        ng-click="posts.nextPage();">Next <i class="fa fa-chevron-right"></i></a>
 </div>
-
-
-
-<!-- one post original template
-
-    <div class="post-preview">
-        <a href="post.html">
-            <h2 class="post-title">
-                Man must explore, and this is exploration at its greatest
-            </h2>
-            <h3 class="post-subtitle">
-                Problems look mighty small from 150 miles up
-            </h3>
-        </a>
-        <p class="post-meta">Posted by
-            <a href="#">Start Bootstrap</a>
-            on September 24, 2018</p>
-    </div>
-    <hr>
-
--->

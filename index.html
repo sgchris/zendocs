@@ -63,6 +63,7 @@
 
 		<!-- controllers -->
 		<script src="/angular/controllers/AuthController.js"></script>
+		<script src="/angular/controllers/SearchController.js"></script>
 		<script src="/angular/controllers/HomeController.js"></script>
 		<script src="/angular/controllers/PostController.js"></script>
 
@@ -118,13 +119,14 @@
 			</div>
 		</header>
 
-		<nav ng-if="currentState == 'home'" class="navbar navbar-expand-lg navbar-dark bg-dark navbar-secondary mb-3">
+		<!-- Search bar -->
+		<nav ng-if="currentState == 'home'" class="navbar navbar-expand-lg navbar-dark bg-dark navbar-secondary mb-3" ng-controller="SearchController">
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-12 mx-auto">
-						<form class="form-inline navbar-search-form">
+						<form class="form-inline navbar-search-form" ng-submit="search.submit();">
 							<div class="input-group">
-								<input class="form-control" type="search" placeholder="Search" aria-label="Search" autofocus>
+								<input ng-model="search.string" class="form-control" type="search" placeholder="Search" aria-label="Search" autofocus>
 								<div class="input-group-append">
 									<button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
 								</div>
