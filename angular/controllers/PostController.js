@@ -10,6 +10,8 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
             title: '',
             content: '',
             description: '',
+            created_at: 0,
+            fullname: '',
 
             errorMessage: '',
 
@@ -108,11 +110,14 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
             $scope.posts.loadInProgress = true;
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
+                console.log('val', val);
                 $scope.safeApply(function() {
                     $scope.posts.form.postid = val.postid;
                     $scope.posts.form.uid = val.uid;
                     $scope.posts.form.title = val.title;
                     $scope.posts.form.description = val.description;
+                    $scope.posts.form.fullname = val.fullname;
+                    $scope.posts.form.created_at = val.created_at;
 
                     if ($state.current.name == 'post.get') {
                         MarkdownEditor.renderHtml(val.content, function(renderedHtml) {

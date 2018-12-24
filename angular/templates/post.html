@@ -1,10 +1,21 @@
-<h1>{{ posts.form.title }} <i ng-if="posts.loadInProgress" class="fa fa-spinner fa-spin"></i></h1>
-<div ng-bind-html="posts.form.content"></div>
-<div>
-    <a href="#!/post/update/{{posts.form.postid}}" 
-        class="btn btn-outline-secondary"
-        ng-if="posts.form.uid == user.uid">Edit this post</a>
-    <a ng-click="posts.delete(posts.form.postid);"
-        class="btn btn-outline-danger"
-        ng-if="posts.form.uid == user.uid">Delete</a>
+<div ng-if="posts.loadInProgress">
+    <h1><i ng-if="posts.loadInProgress" class="fa fa-spinner fa-spin"></i> Loading...</h1>
+</div>
+<div ng-if="!posts.loadInProgress">
+    <div class="post-page-header">
+        <h1>{{ posts.form.title }}</h1>
+        <p class="post-meta">
+            Posted by <a href="#">{{posts.form.fullname}}</a> | {{ posts.form.created_at | timestampToRelativeDate }}
+        </p>
+        <hr />
+    </div>
+    <div ng-bind-html="posts.form.content"></div>
+    <div>
+        <a href="#!/post/update/{{posts.form.postid}}" 
+            class="btn btn-outline-secondary"
+            ng-if="posts.form.uid == user.uid">Edit this post</a>
+        <a ng-click="posts.delete(posts.form.postid);"
+            class="btn btn-outline-danger"
+            ng-if="posts.form.uid == user.uid">Delete</a>
+    </div>
 </div>

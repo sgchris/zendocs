@@ -104,7 +104,7 @@
 		</nav>
 
 		<!-- Page Header -->
-		<header class="masthead" ng-class="{'masthead-home': (currentState == 'home')}">
+		<header class="masthead" ng-class="{'masthead-home': (currentState == 'home'), 'mb-3': (currentState != 'home')}">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row">
@@ -117,6 +117,23 @@
 				</div>
 			</div>
 		</header>
+
+		<nav ng-if="currentState == 'home'" class="navbar navbar-expand-lg navbar-dark bg-dark navbar-secondary mb-3">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-12 mx-auto">
+						<form class="form-inline navbar-search-form">
+							<div class="input-group">
+								<input class="form-control" type="search" placeholder="Search" aria-label="Search" autofocus>
+								<div class="input-group-append">
+									<button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</nav>
 
 		<!-- Main Content -->
 		<div class="container">
