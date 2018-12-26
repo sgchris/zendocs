@@ -22,6 +22,7 @@ module.exports = function(config) {
       'https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js',
       '../angular/vendor/angular-ui-router.min.js',
       'https://www.gstatic.com/firebasejs/5.6.0/firebase.js',
+      'compat.js', 
       '../js/my.firebase.init.js',
       'https://cdnjs.cloudflare.com/ajax/libs/angular-mocks/1.7.5/angular-mocks.min.js',
 

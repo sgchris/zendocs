@@ -1,4 +1,4 @@
-app.controller('HomeController', ['$scope', '$rootScope', function($scope, $rootScope) {
+app.controller('HomeController', ['$q', '$scope', '$rootScope', function($q, $scope, $rootScope) {
 
     $scope.posts = {
         // paging section
@@ -102,25 +102,33 @@ app.controller('HomeController', ['$scope', '$rootScope', function($scope, $root
         // load data from the server (periodically) and store locally ALL(!) the data
         // we store all the data for the searching purposes (FireBase has limitation
         // to filter results by a search string)
-        load: function () {
+        load: function (callbackFn) {
+            var deferred = $q.defer();
+
             var currentTimestamp = Math.floor((new Date()).getTime() / 1000);
             if (
                 $scope.posts.allData === false || 
                 $scope.posts.lastUpdateTime === 0 || 
                 $scope.posts.lastUpdateTime < currentTimestamp - $scope.posts.updateInterval
-            ) {
-                var ref = window.POSTS.orderByChild('created_at');
-                // TODO: add paging (add offset)
-                ref.once('value', function (snapshot) {
+            ) { 
+                firebase.database().ref().child('posts').orderByChild('created_at').once('value', function (snapshot) {
                     $scope.safeApply(function () {
                         $scope.posts.lastUpdateTime = currentTimestamp;
-                        $scope.posts.allData = Object.values(snapshot.val());
+                        $scope.posts.allData = objectValues(snapshot.val());
                         $scope.posts.setData();
+
+                        deferred.resolve();
                     });
+                }, function() {
+                    deferred.reject();
                 });
             } else {
                 $scope.posts.setData();
+                deferred.resolve();
             }
+
+
+            return deferred.promise;
         }
     };
 
