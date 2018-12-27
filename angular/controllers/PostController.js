@@ -1,6 +1,6 @@
 app.controller('PostController', [
-    '$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', '$timeout',
-function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
+    '$scope', '$http', '$state', '$rootScope', 'MarkdownEditor', 'ZNotif', 'ModalBox', 
+function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
     $scope.posts = {
         form: {
             inProgress: false,
@@ -72,6 +72,7 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
                 content: content,
             }).then(function() {
                 ZNotif('Post update', 'Post updated successfully');
+                $state.go('post.get', {postid: postid})
             }).finally(function() {
                 $scope.safeApply(function() {
                     $scope.posts.form.inProgress = false;
@@ -80,16 +81,18 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
         },
 
         delete: function (postid) {
-            $scope.posts.form.inProgress = true;
-            var post = firebase.database().ref('posts/' + postid).remove().then(function() {
-                $state.go('home');
-                
-                ZNotif('Delete post', 'Deleted successfully');
-            }).catch(function(error) {
-                ZNotif('Delete post', error.errorMessage, 'error');
-            }).finally(function() {
-                $scope.safeApply(function() {
-                    $scope.posts.form.inProgress = false;
+            ModalBox.confirm('Delete post', 'Are you sure?', function() {
+                $scope.posts.form.inProgress = true;
+                var post = firebase.database().ref('posts/' + postid).remove().then(function() {
+                    $state.go('home');
+                    
+                    ZNotif('Delete post', 'Deleted successfully');
+                }).catch(function(error) {
+                    ZNotif('Delete post', error.errorMessage, 'error');
+                }).finally(function() {
+                    $scope.safeApply(function() {
+                        $scope.posts.form.inProgress = false;
+                    });
                 });
             });
         },
@@ -110,7 +113,6 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, $timeout) {
             $scope.posts.loadInProgress = true;
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
-                console.log('val', val);
                 $scope.safeApply(function() {
                     $scope.posts.form.postid = val.postid;
                     $scope.posts.form.uid = val.uid;

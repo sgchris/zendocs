@@ -46,6 +46,7 @@
 		<script src="/angular/app.js"></script>
 
 		<!-- services -->
+		<script src="/angular/services/modal-box.js"></script>
 		<script src="/angular/services/znotif.js"></script>
 		<script src="/angular/services/filters.js"></script>
 		<script src="/angular/services/markdown-editor.js"></script>
@@ -70,23 +71,20 @@
 				<div class="collapse navbar-collapse" id="navbarResponsive">
 					<ul class="navbar-nav ml-auto">
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="contact.html" target="_self">Contact</a>
+						<li class="nav-item" ng-if="!user">
+							<a class="nav-link" href="#!/user/login">Login</a>
 						</li>
 						<li class="nav-item" ng-if="!user">
-							<a class="nav-link" href="#!/user/login" target="_self">Login</a>
-						</li>
-						<li class="nav-item" ng-if="!user">
-							<a class="nav-link" href="#!/user/signup" target="_self">Sign up</a>
+							<a class="nav-link" href="#!/user/signup">Sign up</a>
 						</li>
 						<li class="nav-item" ng-if="user">
-							<a class="nav-link" href="#!/post/new" target="_self">New post</a>
+							<a class="nav-link" href="#!/post/new">New post</a>
 						</li>
 						<li class="nav-item" ng-if="user">
-							<a class="nav-link" href="#!/user/profile" target="_self">Profile</a>
+							<a class="nav-link" href="#!/user/profile">Profile</a>
 						</li>
 						<li class="nav-item" ng-if="user">
-							<a class="nav-link" href="#!/user/logout" target="_self">Logout</a>
+							<a class="nav-link" href="#!/user/logout">Logout</a>
 						</li>
 					</ul>
 				</div>

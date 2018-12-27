@@ -87,6 +87,10 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
                     initialValue: initialContent
                 });
 
+                editorObj.codemirror.on('paste', function(a, b, c) {
+                    console.log('paste', a, b, c);
+                });
+
                 // call back
                 if (typeof(callbackFn) == 'function') {
                     callbackFn();
@@ -120,6 +124,7 @@ app.service('MarkdownEditor', ['$timeout', '$sce', function($timeout, $sce) {
             return null;
         },
 
+        // render a valid HTML string from an MD string
         renderHtml: function(content, callbackFn) {
             //var mdeObj = new SimpleMDE();
             loadEditorScripts(function(isAsync) {
