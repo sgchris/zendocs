@@ -21,10 +21,17 @@ module.exports = function(config) {
       'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js',
       'https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js',
       '../angular/vendor/angular-ui-router.min.js',
+      
+      
+      // firebase initialization
       'https://www.gstatic.com/firebasejs/5.6.0/firebase.js',
-      'compat.js', 
       '../js/my.firebase.init.js',
+
+      // testing
       'https://cdnjs.cloudflare.com/ajax/libs/angular-mocks/1.7.5/angular-mocks.min.js',
+
+      // compatibility functions and tools
+      '../js/compat.js', 
 
       // the source
       '../angular/app.js', 
