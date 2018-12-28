@@ -72,7 +72,7 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
                 content: content,
             }).then(function() {
                 ZNotif('Post update', 'Post updated successfully');
-                $state.go('post.get', {postid: postid})
+            $state.go('post.get', {postid: postid});
             }).finally(function() {
                 $scope.safeApply(function() {
                     $scope.posts.form.inProgress = false;

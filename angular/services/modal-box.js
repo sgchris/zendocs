@@ -7,7 +7,7 @@ app.service('ModalBox', [function() {
     var removeBox = function () {
         angular.element('.confirmation-box-curtain').remove();
         angular.element('.confirmation-box-popup').remove();
-    }
+    };
 
     /**
      * display a text box above a curtain
@@ -15,7 +15,7 @@ app.service('ModalBox', [function() {
      * @param {string} title 
      * @param {string} text the main text of the popup
      * @param {array} buttons [{caption: 'foo', callback: function(){}, class: 'primary'}, {...}, ...]
-     * @param {array} optionsOverride default: {width: 400}
+     * @param {array} optionsOverride default: {width:400, closeOnUnfocus:true}
      */
     var showBox = function(title, text, buttons, optionsOverride) {
         // prepare the popup options
@@ -145,11 +145,19 @@ app.service('ModalBox', [function() {
     };
 
     var retObj = {
+        /**
+         * 
+         * @param {String} title Optional. The title at the top
+         * @param {String} text the content of the popup. Might be HTML
+         * @param {Function} callbackFn The callback upon positive confirmation
+         * @param {Function} failureCallbackFn The callback upon negative confirmation
+         * @param {Array} options list of options. Default: {width:400, closeOnUnfocus:true}
+         */
         confirm: function(title, text, callbackFn, failureCallbackFn, options) {
             showBox(title, text, [{
                 caption: 'Ok',
                 callback: callbackFn
-            }]);
+            }], options);
         },
     };
 
