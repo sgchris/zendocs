@@ -89,6 +89,20 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
         }
     };
 
+    $rootScope.downloadDbInProgress = false;
+    $rootScope.downloadDb = function($event) {
+        $event.preventDefault();
+
+        $rootScope.downloadDbInProgress = true;
+        firebase.database().ref().child('posts').once('value').then(function(snap) {
+            downloadStringAsFile('zendocs.json', JSON.stringify(snap.val(), null, 4));
+        }).finally(function() {
+            $rootScope.safeApply(function() {
+                $rootScope.downloadDbInProgress = false;
+            });
+        });
+    };
+
     // watch the "auth" status
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {

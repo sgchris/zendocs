@@ -141,6 +141,20 @@
 				<div class="row">
 					<div class="col-lg-8 col-md-10 mx-auto">
 						<ul class="list-inline text-center">
+							<!-- Download the DB -->
+							<li class="list-inline-item" ng-if="user">
+								<a href="#" title="Download the DB as a json file" ng-click="downloadDb($event);">
+									<span class="fa-stack fa-lg" ng-if="!downloadDbInProgress">
+										<i class="fas fa-circle fa-stack-2x"></i>
+										<i class="fas fa-database fa-stack-1x fa-inverse"></i>
+									</span>
+									<span class="fa-stack fa-lg" ng-if=" downloadDbInProgress">
+										<i class="fas fa-circle fa-stack-2x"></i>
+										<i class="fa fa-spinner fa-spin fa-stack-1x fa-inverse"></i>
+									</span>
+								</a>
+							</li>
+
 							<!-- Twitter -->
 							<li class="list-inline-item">
 								<a href="https://twitter.com/zend" target="_blank">
