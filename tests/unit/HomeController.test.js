@@ -14,10 +14,6 @@ describe('Home Controller', function() {
             });
         }));
 
-        afterEach(function() {
-            // cleanup
-        });
-
         it('should initialize the main object', function() {
             // check the scope 
             expect(scope.posts.searchString).toEqual('');
@@ -46,6 +42,51 @@ describe('Home Controller', function() {
 
         it('should be loaded', function() {
             expect(scope.posts.data).not.toBeFalsy();
+        });
+    });
+
+    describe('Filter data by search string', function() {
+        var scope, rootScope, ctrl;
+
+        beforeEach(function() {
+            inject(function($controller, $rootScope) {
+                scope = $rootScope.$new();
+                rootScope = $rootScope.$new();
+                ctrl = $controller('HomeController', {
+                    $scope: scope, 
+                    $rootScope: rootScope
+                });
+            });
+        }); 
+
+        var exampleData = [{
+            title: 'Tesla has  added two independent directors to its board',
+            description: 'Oracle founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson',
+            content: 'Oracle founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson — as part of a settlement with U.S. securities regulators over CEO Elon Musk’s infamous tweets about taking the company private.'
+        }, {
+            title: 'The Tesla board, led by its Nominating and Corporate Governance Committee',
+            description: 'Mission of accelerating the world’s transition to sustainable energy',
+            content: 'said it considered candidates with a “wide range of skill sets” from across the globe who also hold a strong personal belief in Tesla’s mission of accelerating the world’s transition to sustainable energy.'
+        }];
+
+        it('should return all the values on empty search string', function() {
+            scope.posts.searchString = '';
+            expect(scope.posts.filterResultsBySearchString(exampleData)).toEqual(exampleData);
+        });
+
+        it('should return all the values on empty search string', function() {
+            scope.posts.searchString = 'tesla';
+            expect(scope.posts.filterResultsBySearchString(exampleData)).toEqual(exampleData);
+        });
+
+        it('should find one record', function() {
+            scope.posts.searchString = 'tesla independent oracle founder'; // several search strings matching the first record
+            expect(scope.posts.filterResultsBySearchString(exampleData)).toEqual([exampleData[0]]); // array with one element (the first record)
+        });
+
+        it('should find no records', function() {
+            scope.posts.searchString = 'rhythm conscience indict handkerchief accommodate weird'; // several search strings matching the first record
+            expect(scope.posts.filterResultsBySearchString(exampleData)).toEqual([]);
         });
     });
 
