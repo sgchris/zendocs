@@ -90,4 +90,59 @@ describe('Home Controller', function() {
         });
     });
 
+    describe('Pagination', function() {
+        var scope, rootScope, ctrl;
+
+        beforeEach(function() {
+            inject(function($controller, $rootScope) {
+                scope = $rootScope.$new();
+                rootScope = $rootScope.$new();
+                ctrl = $controller('HomeController', {
+                    $scope: scope, 
+                    $rootScope: rootScope
+                });
+            });
+        });
+
+        var exampleData = [{
+            title: 'Tesla 111 has  added two independent directors to its board',
+            description: 'Oracle 111 founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson',
+            content: 'Oracle 111 founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson — as part of a settlement with U.S. securities regulators over CEO Elon Musk’s infamous tweets about taking the company private.'
+        }, {
+            title: 'The Tesla 222 board, led by its Nominating and Corporate Governance Committee',
+            description: 'Mission 222 of accelerating the world’s transition to sustainable energy',
+            content: 'said it 222 considered candidates with a “wide range of skill sets” from across the globe who also hold a strong personal belief in Tesla’s mission of accelerating the world’s transition to sustainable energy.'
+        }, {
+            title: 'Tesla 333 has  added two independent directors to its board',
+            description: 'Oracle 333 founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson',
+            content: 'Oracle 333 founder, chairman and CTO Larry Ellison and Walgreens executive Kathleen Wilson-Thompson — as part of a settlement with U.S. securities regulators over CEO Elon Musk’s infamous tweets about taking the company private.'
+        }, {
+            title: 'The Tesla 444 board, led by its Nominating and Corporate Governance Committee',
+            description: 'Mission 444 of accelerating the world’s transition to sustainable energy',
+            content: 'said4 444 it considered candidates with a “wide range of skill sets” from across the globe who also hold a strong personal belief in Tesla’s mission of accelerating the world’s transition to sustainable energy.'
+        }];
+
+        it('should return "resultsPerPage" items', function() {
+            scope.posts.resultsPerPage = 2;
+            scope.posts.allData = exampleData;
+            scope.posts.setData();
+            expect(scope.posts.data.length).toEqual(2);
+            expect(scope.posts.data[0].title).toContain('444');
+        });
+
+        it('should switch to the next page', function() {
+            scope.posts.resultsPerPage = 2;
+            scope.posts.allData = exampleData;
+            scope.posts.setData();
+            scope.posts.previousPage();
+            expect(scope.posts.data.length).toEqual(2);
+            expect(scope.posts.data[0].title).toContain('222');
+
+            scope.posts.nextPage();
+            expect(scope.posts.data.length).toEqual(2);
+            expect(scope.posts.data[0].title).toContain('444');
+        });
+
+    });
+
 });
