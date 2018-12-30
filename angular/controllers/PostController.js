@@ -113,31 +113,33 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
             $scope.posts.loadInProgress = true;
             firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
-                $scope.safeApply(function() {
-                    $scope.posts.form.postid = val.postid;
-                    $scope.posts.form.uid = val.uid;
-                    $scope.posts.form.title = val.title;
-                    $scope.posts.form.description = val.description;
-                    $scope.posts.form.fullname = val.fullname;
-                    $scope.posts.form.created_at = val.created_at;
+                if (val) {
+                    $scope.safeApply(function() {
+                        $scope.posts.form.postid = val.postid;
+                        $scope.posts.form.uid = val.uid;
+                        $scope.posts.form.title = val.title;
+                        $scope.posts.form.description = val.description;
+                        $scope.posts.form.fullname = val.fullname;
+                        $scope.posts.form.created_at = val.created_at;
 
-                    if ($state.current.name == 'post.get') {
-                        MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
-                            $scope.safeApply(function() {
-                                // renderedHtml is provided as a $sce.trustAsHtml content
-                                $scope.posts.form.content = renderedHtml;
+                        if ($state.current.name == 'post.get') {
+                            MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
+                                $scope.safeApply(function() {
+                                    // renderedHtml is provided as a $sce.trustAsHtml content
+                                    $scope.posts.form.content = renderedHtml;
+                                });
                             });
-                        });
-                    } else {
-                        $scope.posts.form.content = val.content;
+                        } else {
+                            $scope.posts.form.content = val.content;
 
-                        MarkdownEditor.val($scope.posts.form.content);
-                    }
-                });
-            }).finally(function() {
-                $scope.safeApply(function() {
-                    $scope.posts.loadInProgress = false;
-                });
+                            MarkdownEditor.val($scope.posts.form.content);
+                        }
+                    });
+                }
+
+                $scope.posts.loadInProgress = false;
+            }, function() {
+                $scope.posts.loadInProgress = false;
             });
         } 
     };

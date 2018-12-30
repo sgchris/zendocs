@@ -1,6 +1,6 @@
 describe('Home Controller', function() {
 
-    beforeEach(module('zendocs'))
+    beforeEach(module('zendocs'));
 
     
     describe('Initialization', function() {
