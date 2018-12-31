@@ -109,9 +109,9 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
         },
 
         loadInProgress: false,
-        load: function(postid) {
+        load: function(postid, skipRenderingMDEditor) {
             $scope.posts.loadInProgress = true;
-            firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
+            return firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
                 var val = snap.val();
                 if (val) {
                     $scope.safeApply(function() {
@@ -121,18 +121,23 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
                         $scope.posts.form.description = val.description;
                         $scope.posts.form.fullname = val.fullname;
                         $scope.posts.form.created_at = val.created_at;
-
+                        
                         if ($state.current.name == 'post.get') {
-                            MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
-                                $scope.safeApply(function() {
-                                    // renderedHtml is provided as a $sce.trustAsHtml content
-                                    $scope.posts.form.content = renderedHtml;
+                            if (!skipRenderingMDEditor) {
+                                MarkdownEditor.renderHtml(val.content, function(renderedHtml) {
+                                    $scope.safeApply(function() {
+                                        // renderedHtml is provided as a $sce.trustAsHtml content
+                                        $scope.posts.form.content = renderedHtml;
+                                    });
                                 });
-                            });
+                            } else {
+                                $scope.posts.form.content = val.content;
+                            }
                         } else {
                             $scope.posts.form.content = val.content;
-
-                            MarkdownEditor.val($scope.posts.form.content);
+                            if (!skipRenderingMDEditor) {
+                                MarkdownEditor.val($scope.posts.form.content);
+                            }
                         }
                     });
                 }

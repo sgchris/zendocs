@@ -111,16 +111,21 @@ app.controller('HomeController', ['$q', '$scope', '$rootScope', function($q, $sc
                 $scope.posts.lastUpdateTime === 0 || 
                 $scope.posts.lastUpdateTime < currentTimestamp - $scope.posts.updateInterval
             ) { 
-                firebase.database().ref().child('posts').orderByChild('created_at').once('value', function (snapshot) {
-                    $scope.safeApply(function () {
-                        $scope.posts.lastUpdateTime = currentTimestamp;
-                        $scope.posts.allData = objectValues(snapshot.val());
-                        $scope.posts.setData();
+                firebase.database().ref().child('posts').orderByChild('created_at').once('value', function (snap) {
+                    var val = snap.val();
+                    if (val) {
+                        $scope.safeApply(function () {
+                            $scope.posts.lastUpdateTime = currentTimestamp;
+                            $scope.posts.allData = objectValues(val);
+                            $scope.posts.setData();
 
+                            deferred.resolve();
+                        });
+                    } else {
                         deferred.resolve();
-                    });
+                    }
                 }, function() {
-                    deferred.reject();
+                    deferred.resolve();
                 });
             } else {
                 $scope.posts.setData();
