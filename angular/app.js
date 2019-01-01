@@ -105,13 +105,9 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
 
     // watch the "auth" status
     firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            $rootScope.$apply(function() {
-                $rootScope.user = user;
-            });
-        } else {
-            $rootScope.user = false;
-        }
+        $rootScope.safeApply(function() {
+            $rootScope.user = user || false;
+        });
     });
 
     // save state name in the rootScope

@@ -35,11 +35,15 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
             }
         },
 
-        add: function() {
+        add: function(callbackFn) {
             var title = $scope.posts.form.title;
             var description = $scope.posts.form.description;
             var content = MarkdownEditor.val();
             var user = firebase.auth().currentUser;
+            if (!user) {
+                ZNotif('New post', 'No authenticated user', 'error');
+                return false;
+            }
 
             var newPost = firebase.database().ref().child('posts').push();
             newPost.set({
@@ -51,10 +55,16 @@ function($scope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
                 content: content,
                 description: description,
                 created_at: Math.floor((new Date()).getTime() / 1000),
+            }, function(err) {
+                if (!err) {
+                    if (typeof(callbackFn) == 'function') {
+                        callbackFn();
+                    } else {
+                        ZNotif('New post', 'Post added successfully');
+                        $state.go('home');
+                    }
+                }
             });
-
-            ZNotif('New post', 'Post added successfully');
-            $state.go('home');
         },
 
         update: function() {

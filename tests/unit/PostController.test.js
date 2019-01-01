@@ -41,7 +41,9 @@ describe('Post Controller', function() {
                 }
             })();
 
-        }    
+        } else {
+            done();
+        }
 
     });
 
@@ -53,5 +55,63 @@ describe('Post Controller', function() {
         }));
     });
 
+    /*
+    describe('Insert and delete a post', () => {
+
+        // create and delete a temporary user
+        beforeEach(function(done) {
+            const randNumber = Math.floor(Math.random() * 100000);
+            const testEmail = 'test' + randNumber + '@email.com';
+            const testPassword = 'test.Email.com.123';
+            console.log('creating new user', testEmail);
+            firebase.auth()
+                .createUserWithEmailAndPassword(testEmail, testPassword)
+                .then(_ => {
+                    console.log('created', testEmail);
+                    firebase.auth()
+                        .signInWithEmailAndPassword(testEmail, testPassword)
+                        .then(() => {
+                            console.log('authenticated');
+                            done();
+                        })
+                        .catch(err => {
+                            console.log('signInWithEmailAndPassword err', err);
+                        });
+                })
+                .catch(err => {
+                    console.log('createUserWithEmailAndPassword err', err);
+                });
+        });
+
+        // afterEach(done => {
+        //     console.log('after each');
+        //     let user = firebase.auth().currentUser;
+        //     if (user) {
+        //         user.delete().then(() => {
+        //             console.log('deleted the user');
+        //             done();
+        //         });
+        //     } else {
+        //         done();
+        //     }
+        // });
+
+
+
+        it('should add a new post', () => {
+            let currentUser = firebase.auth().currentUser;
+            expect(typeof(currentUser)).toBe('object');
+            
+            scope.posts.form.title = 'example title from the unit test';
+            scope.posts.form.description = 'example description from the unit test';
+            scope.posts.form.content = 'example content from the unit test';
+            
+            console.log('currentUser', currentUser);
+            scope.posts.add(() => {
+                console.log('added');
+            });
+        });
+    });
+    */
 
 });
