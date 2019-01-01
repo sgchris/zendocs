@@ -2,9 +2,9 @@ describe('Post Controller', function() {
 
     beforeEach(module('zendocs'));
 
-    describe('Initialization', function() {
-        var scope, rootScope, ctrl, postid;
-        beforeEach(function(done) {
+    var scope, rootScope, ctrl = null, postid;
+    beforeEach(function(done) {
+        if (!ctrl) {
             inject(function($controller, $rootScope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
                 scope = $rootScope.$new();
                 rootScope = $rootScope.$new();
@@ -25,27 +25,33 @@ describe('Post Controller', function() {
                 });
             });
 
-            // get existing post id
-            firebase.database().ref().child('posts').once('value', function(snap) {
-                var val = snap.val();
-                if (val) {
-                    postid = objectValues(val)[0].postid;
-
-                    scope.posts.load(postid, 'Skip MDE rendering').then(function() {
-                        done();
-                    });
+            var attemptsNumber = 80;
+            (function checkLoadFinished(attemptNumber) {
+                attemptNumber = attemptNumber || 0;
+                if (scope.posts.form.postid === '' && attemptNumber < attemptsNumber) {
+                    setTimeout(function() {
+                        checkLoadFinished(attemptNumber+1);
+                    }, 50);
                 } else {
+                    if (attemptNumber >= attemptsNumber) {
+                        console.log('Loading timed out');
+                    }
+    
                     done();
                 }
-            });
-        });
+            })();
 
-
-        it('should initialize the user', inject(function() {
-            
-            expect(scope.posts.form.postid).toEqual(postid);
-        }));
+        }    
 
     });
+
+
+    describe('Initialization', function() {
+        it('should load post data', inject(function() {
+            expect(scope.posts.form.postid).toEqual(postid);
+            expect(scope.posts.loadInProgress).toBeFalsy();
+        }));
+    });
+
 
 });
