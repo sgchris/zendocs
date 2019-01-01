@@ -102,7 +102,7 @@ app.controller('HomeController', ['$q', '$scope', '$rootScope', function($q, $sc
         // load data from the server (periodically) and store locally ALL(!) the data
         // we store all the data for the searching purposes (FireBase has limitation
         // to filter results by a search string)
-        load: function (callbackFn) {
+        load: function () {
             var deferred = $q.defer();
 
             var currentTimestamp = Math.floor((new Date()).getTime() / 1000);
@@ -111,6 +111,7 @@ app.controller('HomeController', ['$q', '$scope', '$rootScope', function($q, $sc
                 $scope.posts.lastUpdateTime === 0 || 
                 $scope.posts.lastUpdateTime < currentTimestamp - $scope.posts.updateInterval
             ) { 
+
                 firebase.database().ref().child('posts').orderByChild('created_at').once('value', function (snap) {
                     var val = snap.val();
                     if (val) {
@@ -122,9 +123,11 @@ app.controller('HomeController', ['$q', '$scope', '$rootScope', function($q, $sc
                             deferred.resolve();
                         });
                     } else {
+                        $scope.posts.allData = [];
                         deferred.resolve();
                     }
                 }, function() {
+                    $scope.posts.allData = [];
                     deferred.resolve();
                 });
             } else {

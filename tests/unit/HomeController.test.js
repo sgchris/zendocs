@@ -28,7 +28,10 @@ describe('Home Controller', function() {
         var scope, rootScope, ctrl;
 
         beforeEach(function(done) {
-            inject(function($controller, $rootScope) {
+            inject(function($controller, $rootScope, $httpBackend) {
+                $httpBackend.whenGET("/angular/templates/home.html").respond({ hello: 'World' });
+                $httpBackend.expectGET("/angular/templates/home.html");   
+
                 scope = $rootScope.$new();
                 rootScope = $rootScope.$new();
                 ctrl = $controller('HomeController', {
@@ -36,8 +39,23 @@ describe('Home Controller', function() {
                     $rootScope: rootScope
                 });
             });
+
+            var attemptsNumber = 80;
+            (function checkLoadFinished(attemptNumber) {
+                attemptNumber = attemptNumber || 0;
+                if (scope.posts.allData === false && attemptNumber < attemptsNumber) {
+                    setTimeout(function() {
+                        checkLoadFinished(attemptNumber+1);
+                    }, 50);
+                } else {
+                    if (attemptNumber >= attemptsNumber) {
+                        console.log('Loading timed out');
+                    }
+
+                    done();
+                }
+            })();
             
-            scope.posts.load().then(done);
         }); 
 
         it('should be loaded', function() {
@@ -46,17 +64,19 @@ describe('Home Controller', function() {
     });
 
     describe('Filter data by search string', function() {
-        var scope, rootScope, ctrl;
+        var scope, rootScope, ctrl = null;
 
         beforeEach(function() {
-            inject(function($controller, $rootScope) {
-                scope = $rootScope.$new();
-                rootScope = $rootScope.$new();
-                ctrl = $controller('HomeController', {
-                    $scope: scope, 
-                    $rootScope: rootScope
+            if (!ctrl) {
+                inject(function($controller, $rootScope) {
+                    scope = $rootScope.$new();
+                    rootScope = $rootScope.$new();
+                    ctrl = $controller('HomeController', {
+                        $scope: scope, 
+                        $rootScope: rootScope
+                    });
                 });
-            });
+            }
         }); 
 
         var exampleData = [{
@@ -91,17 +111,19 @@ describe('Home Controller', function() {
     });
 
     describe('Pagination', function() {
-        var scope, rootScope, ctrl;
+        var scope, rootScope, ctrl = null;
 
         beforeEach(function() {
-            inject(function($controller, $rootScope) {
-                scope = $rootScope.$new();
-                rootScope = $rootScope.$new();
-                ctrl = $controller('HomeController', {
-                    $scope: scope, 
-                    $rootScope: rootScope
+            if (!ctrl) {
+                inject(function($controller, $rootScope) {
+                    scope = $rootScope.$new();
+                    rootScope = $rootScope.$new();
+                    ctrl = $controller('HomeController', {
+                        $scope: scope, 
+                        $rootScope: rootScope
+                    });
                 });
-            });
+            }
         });
 
         var exampleData = [{

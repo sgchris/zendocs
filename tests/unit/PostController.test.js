@@ -41,10 +41,9 @@ describe('Post Controller', function() {
         });
 
 
-        it('should initialize the user', inject(function($httpBackend) {
-            $httpBackend.whenGET("/angular/templates/home.html").respond({ hello: 'World' });
-            $httpBackend.expectGET("/angular/templates/home.html");
-            //console.log('postid', postid);
+        it('should initialize the user', inject(function() {
+            
+            expect(scope.posts.form.postid).toEqual(postid);
         }));
 
     });
