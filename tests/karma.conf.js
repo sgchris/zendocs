@@ -44,8 +44,8 @@ module.exports = function(config) {
 
       // the tests
       //'my_karma.init.js',
-      //'./**/*.test.js'
-      'unit/PostController.test.js'
+      './**/*.test.js',
+      //'unit/PostController.test.js'
     ],
 
 

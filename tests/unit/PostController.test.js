@@ -98,6 +98,12 @@ describe('Post Controller', function() {
             expect(newPost.title).toEqual(newTitle);
         });
 
+        afterAll(done => {
+            firebase.database().ref('posts/' + newPost.postid).remove().then(done);
+        });
+
     });
+
+    
 
 });
