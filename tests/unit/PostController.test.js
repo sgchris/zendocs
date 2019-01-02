@@ -5,7 +5,7 @@ describe('Post Controller', function() {
     var scope, rootScope, ctrl = null, postid;
     beforeEach(function(done) {
         if (!ctrl) {
-            inject(function($controller, $rootScope, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
+            inject(function($controller, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
                 scope = $rootScope.$new();
                 rootScope = $rootScope.$new();
                 $state.current.name = 'post.get';
@@ -15,8 +15,7 @@ describe('Post Controller', function() {
                 $httpBackend.expectGET("/angular/templates/home.html");    
 
                 ctrl = $controller('PostController', {
-                    $scope: scope, 
-                    $http: $http,
+                    $scope: scope,
                     $state: $state,
                     $rootScope: rootScope,
                     MarkdownEditor: MarkdownEditor,

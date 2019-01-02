@@ -28,6 +28,7 @@ module.exports = function(config) {
       
       // firebase initialization
       'https://www.gstatic.com/firebasejs/5.6.0/firebase.js',
+      '../node_modules/firebase-mock/browser/firebasemock.js',
       '../js/my.firebase.init.js',
 
       // testing
@@ -42,7 +43,9 @@ module.exports = function(config) {
       '../angular/controllers/*.js', 
 
       // the tests
-      './**/*.js'
+      'my_karma.init.js',
+      //'./**/*.test.js'
+      'unit/PostController.test.js'
     ],
 
 
@@ -101,5 +104,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
-}
+  });
+};
