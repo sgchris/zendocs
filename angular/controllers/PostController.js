@@ -122,9 +122,7 @@ function($scope, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
         load: function(postid, skipRenderingMDEditor) {
             $scope.posts.loadInProgress = true;
             return firebase.database().ref().child('posts/'+postid).once('value', function(snap) {
-                console.log('in callback');
                 var val = snap.val();
-                console.log('snap', snap, 'val', val);
                 if (val) {
                     $scope.safeApply(function() {
                         $scope.posts.form.postid = val.postid;

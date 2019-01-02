@@ -43,7 +43,7 @@ module.exports = function(config) {
       '../angular/controllers/*.js', 
 
       // the tests
-      'my_karma.init.js',
+      //'my_karma.init.js',
       //'./**/*.test.js'
       'unit/PostController.test.js'
     ],

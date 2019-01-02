@@ -5,41 +5,51 @@ describe('Post Controller', function() {
     var scope, rootScope, ctrl = null, postid;
     beforeEach(function(done) {
         if (!ctrl) {
-            inject(function($controller, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
-                scope = $rootScope.$new();
-                rootScope = $rootScope.$new();
-                $state.current.name = 'post.get';
-                $state.params.postid = '';
+            // get posts, and set postid as the first post
+            firebase.database().ref().child('posts').once('value', snap => {
+                let val = snap.val();
+                postid = val ? objectValues(val)[0].postid : null;
+            }).then(() => {
+                firebase.auth()
+                    .signInWithEmailAndPassword('test32306@email.com', 'test.Email.com.123')
+                    .then(() => {
+                    inject(function($controller, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
+                        scope = $rootScope.$new();
+                        rootScope = $rootScope.$new();
+                        $state.current.name = 'post.get';
+                        $state.params.postid = postid;
+        
+                        $httpBackend.whenGET("/angular/templates/home.html").respond({ hello: 'World' });
+                        $httpBackend.expectGET("/angular/templates/home.html");    
+        
+                        ctrl = $controller('PostController', {
+                            $scope: scope,
+                            $state: $state,
+                            $rootScope: rootScope,
+                            MarkdownEditor: MarkdownEditor,
+                            ZNotif: ZNotif,
+                            ModalBox: ModalBox,
+                        });
+                    });
+        
+                    // wait for the post to load
+                    var attemptsNumber = 80;
+                    (function checkLoadFinished(attemptNumber) {
+                        attemptNumber = attemptNumber || 0;
+                        if (scope.posts.form.postid === '' && attemptNumber < attemptsNumber) {
+                            setTimeout(function() {
+                                checkLoadFinished(attemptNumber+1);
+                            }, 50);
+                        } else {
+                            if (attemptNumber >= attemptsNumber) {
+                                console.log('Loading timed out');
+                            }
 
-                $httpBackend.whenGET("/angular/templates/home.html").respond({ hello: 'World' });
-                $httpBackend.expectGET("/angular/templates/home.html");    
-
-                ctrl = $controller('PostController', {
-                    $scope: scope,
-                    $state: $state,
-                    $rootScope: rootScope,
-                    MarkdownEditor: MarkdownEditor,
-                    ZNotif: ZNotif,
-                    ModalBox: ModalBox,
+                            done();
+                        }
+                    })();
                 });
             });
-
-            var attemptsNumber = 80;
-            (function checkLoadFinished(attemptNumber) {
-                attemptNumber = attemptNumber || 0;
-                if (scope.posts.form.postid === '' && attemptNumber < attemptsNumber) {
-                    setTimeout(function() {
-                        checkLoadFinished(attemptNumber+1);
-                    }, 50);
-                } else {
-                    if (attemptNumber >= attemptsNumber) {
-                        console.log('Loading timed out');
-                    }
-    
-                    done();
-                }
-            })();
-
         } else {
             done();
         }
@@ -54,63 +64,40 @@ describe('Post Controller', function() {
         }));
     });
 
-    /*
-    describe('Insert and delete a post', () => {
 
-        // create and delete a temporary user
-        beforeEach(function(done) {
-            const randNumber = Math.floor(Math.random() * 100000);
-            const testEmail = 'test' + randNumber + '@email.com';
-            const testPassword = 'test.Email.com.123';
-            console.log('creating new user', testEmail);
-            firebase.auth()
-                .createUserWithEmailAndPassword(testEmail, testPassword)
-                .then(_ => {
-                    console.log('created', testEmail);
-                    firebase.auth()
-                        .signInWithEmailAndPassword(testEmail, testPassword)
-                        .then(() => {
-                            console.log('authenticated');
-                            done();
-                        })
-                        .catch(err => {
-                            console.log('signInWithEmailAndPassword err', err);
-                        });
-                })
-                .catch(err => {
-                    console.log('createUserWithEmailAndPassword err', err);
-                });
-        });
-
-        // afterEach(done => {
-        //     console.log('after each');
-        //     let user = firebase.auth().currentUser;
-        //     if (user) {
-        //         user.delete().then(() => {
-        //             console.log('deleted the user');
-        //             done();
-        //         });
-        //     } else {
-        //         done();
-        //     }
-        // });
-
-
-
-        it('should add a new post', () => {
-            let currentUser = firebase.auth().currentUser;
-            expect(typeof(currentUser)).toBe('object');
-            
-            scope.posts.form.title = 'example title from the unit test';
+    describe('add post', () => {
+        let newPost, 
+            newTitle = 'example title from the unit test';
+        beforeEach(done => {
+            scope.posts.form.title = newTitle;
             scope.posts.form.description = 'example description from the unit test';
             scope.posts.form.content = 'example content from the unit test';
+            scope.posts.form.created_at = Math.floor((new Date()).getTime() / 1000);
             
-            console.log('currentUser', currentUser);
+            // add new post
             scope.posts.add(() => {
-                console.log('added');
+
+                // load all the posts
+                firebase.database().ref().child('posts')
+                    .orderByChild('created_at')
+                    .once('value', snap => {
+                        let val = snap.val();
+                        if (val) {
+                            let vals = objectValues(val);
+
+                            // new post is the last one
+                            newPost = vals[vals.length - 1];
+                        }
+
+                        done();
+                    });
             });
         });
+
+        it('should add a new post', () => {
+            expect(newPost.title).toEqual(newTitle);
+        });
+
     });
-    */
 
 });
