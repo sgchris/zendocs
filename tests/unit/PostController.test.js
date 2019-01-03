@@ -13,7 +13,11 @@ describe('Post Controller', function() {
                 firebase.auth()
                     .signInWithEmailAndPassword('test32306@email.com', 'test.Email.com.123')
                     .then(() => {
-                    inject(function($controller, $http, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox, $httpBackend) {
+                    inject(function($controller, $http, $state, $rootScope, MarkdownEditor, ZNotif, $httpBackend) {
+                        // override modal box confirmation
+                        var ModalBox = {
+                            confirm: (a, b, callbackFn) => callbackFn()
+                        };
                         scope = $rootScope.$new();
                         rootScope = $rootScope.$new();
                         $state.current.name = 'post.get';
@@ -99,7 +103,25 @@ describe('Post Controller', function() {
         });
 
         afterAll(done => {
-            firebase.database().ref('posts/' + newPost.postid).remove().then(done);
+            scope.posts.delete(newPost.postid);
+
+            // wait for the delete function to finish
+            (function checkDeleteFinished() {
+                if (typeof(window.___checkDeleteFinishedAttempts) == 'undefined') {
+                    window.___checkDeleteFinishedAttempts = 0;
+                } else {
+                    ++window.___checkDeleteFinishedAttempts;
+                }
+
+                if (scope.posts.form.inProgress && window.___checkDeleteFinishedAttempts < 80) {
+                    setTimeout(() => {
+                        checkDeleteFinished();
+                    }, 50);
+                } else {
+                    delete window.___checkDeleteFinishedAttempts;
+                    done();
+                }
+            }());
         });
 
     });

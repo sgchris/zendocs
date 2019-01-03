@@ -1,2 +1,1 @@
-// replace "firebase" object for tests
-MockFirebase.override();
+// initializations for the tests

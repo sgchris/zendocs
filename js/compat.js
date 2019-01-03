@@ -15,10 +15,14 @@ function objectValues(obj) {
         return [];
     }
 
-    return Object.keys(obj).map(function(key) {
-        return obj[key];
-    });
-};
+    if (typeof(Object.values) == 'function') {
+        return Object.values(obj);
+    } else {
+        return Object.keys(obj).map(function(key) {
+            return obj[key];
+        });
+    }
+}
 
 
 /**
