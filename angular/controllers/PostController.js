@@ -76,18 +76,22 @@ function($scope, $state, $rootScope, MarkdownEditor, ZNotif, ModalBox) {
             var content = MarkdownEditor.val();
 
             var post = firebase.database().ref().child('posts/' + postid);
-            post.update({
+            var promise = post.update({
                 title: title,
                 description: description,
                 content: content,
-            }).then(function() {
+            });
+            
+            promise.then(function() {
                 ZNotif('Post update', 'Post updated successfully');
-            $state.go('post.get', {postid: postid});
+                $state.go('post.get', {postid: postid});
             }).finally(function() {
                 $scope.safeApply(function() {
                     $scope.posts.form.inProgress = false;
                 });
             });
+
+            return promise;
         },
 
         delete: function (postid) {

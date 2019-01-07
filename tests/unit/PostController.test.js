@@ -3,6 +3,10 @@ describe('Post Controller', function() {
     beforeEach(module('zendocs'));
 
     var scope, rootScope, ctrl = null, postid;
+
+    // 1. Get the latest post id, 
+    // 2. Authenticate the user
+    // 3. override the modal box (confirm box)
     beforeEach(function(done) {
         if (!ctrl) {
             // get posts, and set postid as the first post
@@ -61,22 +65,30 @@ describe('Post Controller', function() {
     });
 
 
+    var testTitle = 'example title from the unit test';
+    var testDescription = 'example description from the unit test';
+    var testContent = 'example content from the unit test';
+    var getCurrentTimestamp = () => Math.floor((new Date()).getTime() / 1000);
+
+
     describe('Initialization', function() {
         it('should load post data', inject(function() {
+            // check that the post loaded, and it's the latest one (the one required)
             expect(scope.posts.form.postid).toEqual(postid);
+
+            // check that it marked the loading as finished
             expect(scope.posts.loadInProgress).toBeFalsy();
         }));
     });
 
-
     describe('add post', () => {
-        let newPost, 
-            newTitle = 'example title from the unit test';
+        var newPost;
+
         beforeEach(done => {
-            scope.posts.form.title = newTitle;
-            scope.posts.form.description = 'example description from the unit test';
-            scope.posts.form.content = 'example content from the unit test';
-            scope.posts.form.created_at = Math.floor((new Date()).getTime() / 1000);
+            scope.posts.form.title = testTitle;
+            scope.posts.form.description = testDescription;
+            scope.posts.form.content = testContent;
+            scope.posts.form.created_at = getCurrentTimestamp();
             
             // add new post
             scope.posts.add(() => {
@@ -99,10 +111,122 @@ describe('Post Controller', function() {
         });
 
         it('should add a new post', () => {
-            expect(newPost.title).toEqual(newTitle);
+            // check that the latest post is the new one
+            expect(newPost.title).toEqual(testTitle);
         });
 
         afterAll(done => {
+            firebase.database().ref().child('posts/' + newPost.postid).remove().then(done);
+        });
+
+    });
+
+    // update the post
+    describe('update post', () => {
+        var newPost, updatedPost;
+
+        beforeEach(done => {
+            newPost = firebase.database().ref().child('posts').push();
+            newPost.set({
+                postid: newPost.key,
+                title: testTitle, 
+                content: testContent,
+                description: testDescription
+            }, function(err) {
+                if (err) {
+                    console.log('cannot add new post');
+                }
+            }).then(() => {
+                scope.posts.form.postid = newPost.postid;
+                scope.posts.form.title = testTitle + ' updated';
+                scope.posts.form.description = testDescription + ' updated';
+                scope.posts.form.content = testContent + ' updated';
+                
+                // update the new post
+                scope.posts.update().then(() => {
+                    // load all the posts
+                    firebase.database().ref().child('posts')
+                        .orderByChild('created_at')
+                        .once('value', snap => {
+                            let val = snap.val();
+                            if (val) {
+                                let vals = objectValues(val);
+    
+                                // new post is the last one
+                                updatedPost = vals[vals.length - 1];
+                            }
+    
+                            done();
+                        });
+                });
+
+            });
+
+        });
+
+        it('should updated the new post', () => {
+            // check that the latest post is the new one
+            expect(updatedPost.title).toEqual(testTitle + ' updated');
+        });
+
+        afterAll(done => {
+            firebase.database().ref().child('posts/' + newPost.postid).remove().then(done);
+        });
+    });
+
+
+    // Delete the post
+    describe('Delete post', () => {
+        var newPost, postDeleted = false;
+
+        beforeEach(done => {
+            newPost = firebase.database().ref().child('posts').push();
+            newPost.set({
+                postid: newPost.key,
+                title: testTitle, 
+                content: testContent,
+                description: testDescription
+            }, function(err) {
+                console.log('cannot add new post');
+            }).then(() => {
+                // delete the new post
+                scope.posts.delete(newPost.postid);
+
+                // wait for the delete function to finish
+                (function checkDeleteFinished() {
+                    if (typeof(window.___checkDeleteFinishedAttempts) == 'undefined') {
+                        window.___checkDeleteFinishedAttempts = 0;
+                    } else {
+                        ++window.___checkDeleteFinishedAttempts;
+                    }
+
+                    if (scope.posts.form.inProgress && window.___checkDeleteFinishedAttempts < 80) {
+                        setTimeout(() => {
+                            checkDeleteFinished();
+                        }, 50);
+                    } else {
+                        if (window.___checkDeleteFinishedAttempts < 80) {
+                            postDeleted = true;
+                        }
+                        delete window.___checkDeleteFinishedAttempts;
+                        done();
+                    }
+                }());
+
+            });
+
+            it('should delete the post', () => {
+                expect(postDeleted).toBeTruthy();
+            });
+        });
+
+        afterAll(done => {
+            firebase.database().ref().child('posts/' + newPost.postid).remove().then(done);
+        });
+    });
+
+    /*
+    afterAll(done => {
             scope.posts.delete(newPost.postid);
 
             // wait for the delete function to finish
@@ -123,9 +247,6 @@ describe('Post Controller', function() {
                 }
             }());
         });
-
-    });
-
-    
+    */
 
 });
