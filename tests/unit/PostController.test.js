@@ -1,4 +1,4 @@
-describe('Post Controller', function() {
+xdescribe('Post Controller', function() {
 
     beforeEach(module('zendocs'));
 
@@ -81,7 +81,7 @@ describe('Post Controller', function() {
         }));
     });
 
-    describe('add post', () => {
+    xdescribe('add post', () => {
         var newPost;
 
         beforeEach(done => {
@@ -176,7 +176,7 @@ describe('Post Controller', function() {
 
 
     // Delete the post
-    describe('Delete post', () => {
+    xdescribe('Delete post', () => {
         var newPost, postDeleted = false;
 
         beforeEach(done => {
@@ -224,29 +224,5 @@ describe('Post Controller', function() {
             firebase.database().ref().child('posts/' + newPost.postid).remove().then(done);
         });
     });
-
-    /*
-    afterAll(done => {
-            scope.posts.delete(newPost.postid);
-
-            // wait for the delete function to finish
-            (function checkDeleteFinished() {
-                if (typeof(window.___checkDeleteFinishedAttempts) == 'undefined') {
-                    window.___checkDeleteFinishedAttempts = 0;
-                } else {
-                    ++window.___checkDeleteFinishedAttempts;
-                }
-
-                if (scope.posts.form.inProgress && window.___checkDeleteFinishedAttempts < 80) {
-                    setTimeout(() => {
-                        checkDeleteFinished();
-                    }, 50);
-                } else {
-                    delete window.___checkDeleteFinishedAttempts;
-                    done();
-                }
-            }());
-        });
-    */
 
 });
