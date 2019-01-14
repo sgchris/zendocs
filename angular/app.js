@@ -70,7 +70,7 @@ app.config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 }]);
 
-app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
+app.run(['$rootScope', '$transitions', '$timeout', function($rootScope, $transitions, $timeout) {
     $rootScope.user = false;
 
     $rootScope.safeApply = function (fn) {
@@ -81,10 +81,19 @@ app.run(['$rootScope', '$transitions', function($rootScope, $transitions) {
 
         var phase = this.$root.$$phase;
         if (phase == '$apply' || phase == '$digest') {
-            if (fn && (typeof (fn) === 'function')) {
-                fn();
+            window.___safeApplyTimerCounter = window.___safeApplyTimerCounter || 0;
+            if (window.___safeApplyTimerCounter++ < 100) {
+                $timeout(function() {
+                    $rootScope.safeApply(fn);
+                }, 50);
+            } else {
+                console.error('safeApply: timeout error');
             }
         } else {
+            if (typeof(window.___safeApplyTimerCounter) != 'undefined') {
+                delete window.___safeApplyTimerCounter;
+            }
+
             this.$apply(fn);
         }
     };
